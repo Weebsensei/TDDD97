@@ -1,0 +1,28 @@
+#savecontact{
+    width: 400px;
+    height: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 400px;
+}
+#savecontact input{
+    width: 100%;
+    margin-top: 3px;
+}
+
+#loadcontact{
+    width: 400px;
+    height: 400px;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 400px;
+}
+#loadcontact input{
+    width: 100%;
+    margin-top: 3px;
+}
+
+.feedbackrow{
+    color: white;
+    background-color: hotpink;
+}

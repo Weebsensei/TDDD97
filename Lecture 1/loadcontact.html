@@ -1,0 +1,14 @@
+<html>
+    <head>
+        <title>Load Contact</title>
+        <link rel="stylesheet" type="text/css" href="style.css">
+        <script type="text/javascript" src="logic.js"></script>
+        </head>
+    <body>
+        <form id="loadcontact" onsubmit="loadContact(this);return false;">
+            <input type="text" name="name" id="name" placeholder="Enter Name" minlength="2" required>
+            <input type="submit" value="load" id="submit">
+            <div id="feedback"></div>
+        </form>
+    </body>
+</html>
