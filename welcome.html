@@ -7,7 +7,7 @@
     <body>
         <div class="center">   
             <div class="welcome_element" id="twidder">
-                <img id="Twidder" src="wimage.png" width="340" height="400">
+                <img id="Twidder" src="wimage.png" width="">
             </div>
 
             <div class="welcome_element" id="login">
@@ -18,41 +18,41 @@
                     <label for="passwd"> Password </label>
                     <input type="password" id="passwd" name="passwd">
                     
-                    <input type="submit" value="login">
+                    <input class="button" type="submit" value="login">
                 </form>
             </div>
 
             <div class="welcome_element" id="signup">
                 <form onsubmit="signup(this);return false;" id="signup">
-                    <h2>Sign up here</h2>
+                    <h2 class="signuptext">Sign up here</h2>
                     <label for="fname">First Name</label>
-                    <input type="text" id="fname" name="fname" placeholder="First Name" required><br>
+                    <input type="text" id="fname" name="fname" required>
 
                     <label for="lname">Family Name</label>
-                    <input type="text" id="lname" name="lname" placeholder="Family Name" required><br>
+                    <input type="text" id="lname" name="lname" required>
 
                     <label for="gender">Gender</label>
                     <select id="gender" name="gender">
                         <option value="male">Male</option>
                         <option value="female">Female</option>
-                    </select><br>
+                    </select>
 
                     <label for="city">City</label>
-                    <input type="text" id="city" name="city" required><br>
+                    <input type="text" id="city" name="city" required>
 
                     <label for="country">Country</label>
-                    <input type="text" id="country" name="country" required><br>
+                    <input type="text" id="country" name="country" required>
 
                     <label for="email">Email</label>
-                    <input type="text" id="email" name="email" required><br>
+                    <input type="text" id="email" name="email" required>
 
                     <label for="passwd">Password</label>
-                    <input type="text" id="passwd" name="passwd" required><br>
+                    <input type="text" id="passwd" name="passwd" required>
 
                     <label for="repasswd">Repeat PSW</label>
-                    <input type="text" id="repasswd" name="repasswd" required><br>
+                    <input type="text" id="repasswd" name="repasswd" required>
                     
-                    <input type="submit" value="signup">
+                    <input class="button" type="submit" value="signup">
                 </form>
             </div>
         </div>
