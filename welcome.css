@@ -1,7 +1,8 @@
 body {
     background-color: lightblue;
 }
-.center {
+
+#center {
     margin: auto;
     margin-top: 100px;
     width: 600px;
@@ -14,10 +15,6 @@ body {
     position: relative;
 }
 
-.input-field {
-    flex: 1;
-}
-
 #twidder {
     float: left;
     width: 340px;
@@ -28,6 +25,12 @@ body {
     padding-top: 10px;
     float: right;
     width: 250px;
+}
+
+#signup {
+    float: right;
+    width: 250px;
+    margin-top: 5px;
 }
 
 .button{
@@ -44,13 +47,7 @@ body {
     justify-self: center;
 }
 
-#signup {
-    float: right;
-    width: 250px;
-    margin-top: 5px;
-}
-
-form {
+.welcome_element form {
     display: grid;
     grid-template-columns: 100px 1fr; /* Label width fixed, inputs take the remaining space */
     gap: 2px;
@@ -59,11 +56,11 @@ form {
     align-items: center; /* Aligns labels and inputs vertically */
 }
 
-label {
+.welcome_element label {
     text-align: left;
 }
 
-input, select {
+.welcome_element input, select {
     width: 100%;
     box-sizing: border-box; /* Ensures padding doesn’t affect width */
 }
