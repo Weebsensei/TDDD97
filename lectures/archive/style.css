@@ -1,0 +1,30 @@
+#savecontact{
+    width: 400px;
+    height: 400px;
+    margin: 0 auto;
+    margin-top: 300px;
+}
+#savecontact input{
+    width: 100%;
+    margin: 5px 0;
+}
+
+#loadcontact{
+    width: 400px;
+    height: 200px;
+    margin: 0 auto;
+    margin-top: 300px;
+}
+#loadcontact input{
+    width: 100%;
+    margin: 5px 0;
+}
+
+.rowodd{
+    background-color: white;
+    width: 100%;
+}
+.roweven{
+    background-color: gray;
+    width: 100%;
+}
