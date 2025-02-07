@@ -11,20 +11,22 @@
             </div>
 
             <div class="welcome_element" id="login">
-                <form onsubmit="login(this);return false;" id="login">
-                    <label for="email"> Email </label>
-                    <input type="text" id="email" name="email" required>
+                <form onsubmit="return LoginValidate();return false;" id="login">
+                    <label for="email_input"> Email </label>
+                    <input type="email" id="email_input" name="email" required>
 
-                    <label for="passwd"> Password </label>
-                    <input type="password" id="passwd" name="passwd">
+                    <label for="passwd_input"> Password </label>
+                    <input type="password" id="passwd_input" name="passwd" required minlength="6">
                     
                     <input class="button" type="submit" value="login">
+                    <p class="error_mesage" id="login_error"></p> <!-- room for error mesage when fail log in. remember to add-->
                 </form>
             </div>
 
             <div class="welcome_element" id="signup">
-                <form onsubmit="signup(this);return false;" id="signup">
+                <form onsubmit="signup(this);return false;" id="signup_form">
                     <h2 class="signuptext">Sign up here</h2>
+
                     <label for="fname">First Name</label>
                     <input type="text" id="fname" name="fname" required>
 
@@ -32,8 +34,8 @@
                     <input type="text" id="lname" name="lname" required>
 
                     <label for="gender">Gender</label>
-                    <select id="gender" name="gender">
-                        <option disabled selected>Select gender</option>
+                    <select id="gender" name="gender" required>
+                        <option value="" disabled selected>Select gender</option>
                         <option value="male">Male</option>
                         <option value="female">Female</option>
                     </select>
@@ -45,15 +47,16 @@
                     <input type="text" id="country" name="country" required>
 
                     <label for="email">Email</label>
-                    <input type="text" id="email" name="email" required>
+                    <input type="email" id="email" name="email" required>
 
                     <label for="passwd">Password</label>
-                    <input type="text" id="passwd" name="passwd" required>
+                    <input type="password" id="passwd" name="passwd" required minlength="6">
 
                     <label for="repasswd">Repeat PSW</label>
-                    <input type="text" id="repasswd" name="repasswd" required>
+                    <input type="password" id="repasswd" name="repasswd" required>
                     
                     <input class="button" type="submit" value="signup">
+                    <p class="error_mesage" id="signup_error"></p> <!-- room for error mesage when fail log in. remember to add-->
                 </form>
             </div>
         </div>
