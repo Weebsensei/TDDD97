@@ -47,7 +47,7 @@ body {
     justify-self: center;
 }
 
-.welcome_element form {
+form {
     display: grid;
     grid-template-columns: 100px 1fr; /* Label width fixed, inputs take the remaining space */
     gap: 2px;
@@ -56,11 +56,11 @@ body {
     align-items: center; /* Aligns labels and inputs vertically */
 }
 
-.welcome_element label {
+label {
     text-align: left;
 }
 
-.welcome_element input, select {
+input, select {
     width: 100%;
     box-sizing: border-box; /* Ensures padding doesn’t affect width */
 }
