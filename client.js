@@ -3,7 +3,7 @@ window.onload = function(){
 };
 
 function getToken() {
-    return localStorage.getItem("loggedinusers");
+    return localStorage.getItem("token");
 }
 
 function displayView (){
@@ -14,22 +14,26 @@ function displayView (){
     }
 };
 
-function Login(form) {
-    LoginValidate(form);
-}
-
-function LoginValidate(form) {
+function login(form) {
+    // Gather Inputs
     let email = form.email_input.value;
     let password = form.passwd_input.value;
-    let errorMessage = document.getElementById("login_error")
 
+    // Login
+    loginValidate(email, password);
+}
 
+function loginValidate(email, password) {
+
+    // Call Call server sign-in function
     let response = serverstub.signIn(email, password);
+
     if (response.success){
-        localStorage.setItem(token, response.data);
+        let token = response.data;
+        localStorage.setItem("token", token);
         displayView();
     } else {
-        document.getElementById("signup_error").innerHTML = response.message;
+        document.getElementById("errorMessage").innerHTML = response.message;
         errorElement.style.display = "block";
     }
     return true;
@@ -38,44 +42,39 @@ function LoginValidate(form) {
 
 function passwdValidation(passwd, repasswd) {
     if (passwd !== repasswd) {
-        document.getElementById("signup_error").innerHTML = "lösenorden måste vara lika. försök igen ;)";
+        document.getElementById("errorMessage").innerHTML = "Passwords doesn't match. Try again.";
         return false;
     }
     return true;
 }
-
-function signup(form){
-   return signupValidation(form);
-}
     
-function signupValidation(form) {
+function signup(form) {
+    let email = form.email.value;
     let passwd = form.passwd.value;
     let repasswd = form.repasswd.value;
 
-    if(!passwdValidation(passwd, repasswd)){
-        return false
-    }
+    if(passwdValidation(passwd, repasswd)){
+        // Create a data object for server call
+        let dataObject = {
+            email: form.email.value,
+            password: form.passwd.value,
+            firstname: form.fname.value,
+            familyname: form.lname.value,
+            gender: form.gender.value,
+            city: form.city.value,
+            country: form.country.value
+        };
 
-    // Create a data object for server call
-    let dataObject = {
-        email: form.email.value,
-        password: form.passwd.value,
-        firstname: form.fname.value,
-        familyname: form.lname.value,
-        gender: form.gender.value,
-        city: form.city.value,
-        country: form.country.value
-    };
-
-    // Call server sign-up function
-    let response = serverstub.signUp(dataObject);
-    
-    if (response.success){
-        document.getElementById("signup_error").innerHTML = response.message;
-        displayView();
-    } else {
-        document.getElementById("signup_error").innerHTML = response.message;
-        errorElement.style.display = "block";
+        // Call server sign-up function
+        let response = serverstub.signUp(dataObject);
+        
+        if (response.success){
+            document.getElementById("errorMessage").innerHTML = response.message;
+            loginValidate(email, passwd);
+        } else {
+            document.getElementById("errorMessage").innerHTML = response.message;
+            errorElement.style.display = "block";
+        }
     }
 }
 
@@ -97,12 +96,25 @@ function showTab(tabName){
 }
 
 function changePassword(form) {
-    let oldpwd = form.oldPw.value;
-    let passwd = form.newPw.value; //new password
-    let repasswd = form.rePw.value; // repeat new password
+    let oldpwd = form.oldPw.value; // Old/Current Password
+    let passwd = form.newPw.value; // New Password
+    let repasswd = form.rePw.value; // Repeat New Password
 
     if(passwdValidation(passwd, repasswd)) {
-        serverstub.changePassword(getToken(), oldpwd, passwd);
+        let response = serverstub.changePassword(getToken(), oldpwd, passwd);
+        if(response.success){
+            form.reset();
+        }
+        document.getElementById("errorMessage").innerHTML = response.message;
     }
-    document.getElementById("signup_error").innerHTML = response.message;
+    
 } 
+
+function signOut() {
+    // Call server signOut function
+    serverstub.signOut(getToken());
+    // Remove token from storage
+    localStorage.removeItem("token");
+    // Update view
+    displayView();
+}

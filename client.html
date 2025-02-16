@@ -10,7 +10,7 @@
                 </div>
     
                 <div class="welcome_element" id="login">
-                    <form onsubmit="return LoginValidate(this);return false;" id="login">
+                    <form onsubmit="return login(this);return false;" id="login">
                         <label for="email_input"> Email </label>
                         <input type="email" id="email_input" name="email" required>
     
@@ -18,7 +18,7 @@
                         <input type="password" id="passwd_input" name="passwd" required minlength="6">
                         
                         <input class="button" type="submit" value="login">
-                        <p class="error_mesage" id="login_error"></p> <!-- room for error mesage when fail log in. remember to add-->
+                        <p class="error_mesage" id="errorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
                     </form>
                 </div>
     
@@ -55,7 +55,7 @@
                         <input type="password" id="repasswd" name="repasswd" required>
                         
                         <input class="button" type="submit" value="Sign Up">
-                        <p class="error_mesage" id="signup_error"></p> <!-- room for error mesage when fail log in. remember to add-->
+                        <p class="error_mesage" id="errorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
                     </form>
                 </div>
             </div>
@@ -78,7 +78,7 @@
         </div>
     
         <div id="account" class="tab-content" style="display: none;">
-            <h2>Account</h2>
+            <h2>Change Password</h2>
             <form onsubmit="changePassword(this);return false;" id="changePassword">
                 <label for="oldPw">Old Password</label>
                 <input type="password" id="oldPw" name="oldPw" required minlength="6">
@@ -90,8 +90,9 @@
                 <input type="password" id="rePw" name="rePw" required minlength="6">
                 
                 <input class="button" type="submit" value="Change Password">
-                <p class="error_mesage" id="signup_error"></p> <!-- room for error mesage when fail log in. remember to add-->
+                <p class="error_mesage" id="errorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
             </form>
+            <button onclick="signOut()"> Sign Out </button>
         </div>
     </script>
     </head>
