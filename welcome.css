@@ -1,5 +1,6 @@
 body {
     background-color: lightblue;
+    margin: 0 !important;
 }
 
 #center {
@@ -9,7 +10,55 @@ body {
     height: 400px;
 }
 
-.welcome_element {
+.tabs {
+    display: flex;
+    border-bottom: 2px solid #4e0303;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.tab.active {
+    border-bottom: 2px solid rgb(2, 122, 48);
+    font-weight: bold;
+}
+
+.tab-content {
+    padding: 20px;
+    display: none;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* .welcome_element {
     background-color: white;
     border-style: solid;
     position: relative;
@@ -22,15 +71,17 @@ body {
 }
 
 #login {
-    padding-top: 10px;
     float: right;
     width: 250px;
+    height: 95px;
+    
 }
 
 #signup {
     float: right;
     width: 250px;
-    margin-top: 5px;
+    margin-top: 10px;
+    height: 292px;
 }
 
 .button{
@@ -49,11 +100,11 @@ body {
 
 form {
     display: grid;
-    grid-template-columns: 100px 1fr; /* Label width fixed, inputs take the remaining space */
-    gap: 2px;
-    max-width: 400px; /* Adjust as needed */
-    margin: auto; /* Center the form */
-    align-items: center; /* Aligns labels and inputs vertically */
+    grid-template-columns: 100px 1fr; 
+    gap: 1px;
+    max-width: 400px; 
+    margin: auto; 
+    align-items: center; 
 }
 
 label {
@@ -62,5 +113,6 @@ label {
 
 input, select {
     width: 100%;
-    box-sizing: border-box; /* Ensures padding doesn’t affect width */
-}
+    box-sizing: border-box; 
+    margin-top: 2px;
+}  */

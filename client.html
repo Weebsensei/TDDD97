@@ -10,7 +10,7 @@
                 </div>
     
                 <div class="welcome_element" id="login">
-                    <form onsubmit="return LoginValidate();return false;" id="login">
+                    <form onsubmit="return LoginValidate(this);return false;" id="login">
                         <label for="email_input"> Email </label>
                         <input type="email" id="email_input" name="email" required>
     
@@ -54,13 +54,45 @@
                         <label for="repasswd">Repeat PSW</label>
                         <input type="password" id="repasswd" name="repasswd" required>
                         
-                        <input class="button" type="submit" value="signup">
+                        <input class="button" type="submit" value="Sign Up">
                         <p class="error_mesage" id="signup_error"></p> <!-- room for error mesage when fail log in. remember to add-->
                     </form>
                 </div>
             </div>
         </script>
     <script id="profile_view" type="text/view">
+        <div id="tabs">
+            <button class="tab active" onclick="showTab('home')">Home</button>
+            <button class="tab" onclick="showTab('browse')">Browse</button>
+            <button class="tab" onclick="showTab('account')">Account</button>
+        </div> 
+
+        <div id="home" class="tab-content" style="display: block;">
+            <h2>Home</h2>
+            <p>Welcome to your profile!</p>
+        </div>
+    
+        <div id="browse" class="tab-content" style="display: none;">
+            <h2>Browse</h2>
+            <p>Here you can browse other users.</p>
+        </div>
+    
+        <div id="account" class="tab-content" style="display: none;">
+            <h2>Account</h2>
+            <form onsubmit="changePassword(this);return false;" id="changePassword">
+                <label for="oldPw">Old Password</label>
+                <input type="password" id="oldPw" name="oldPw" required minlength="6">
+
+                <label for="newPw">New Password</label>
+                <input type="password" id="newPw" name="newPw" required minlength="6">
+
+                <label for="rePw">Repeat Password</label>
+                <input type="password" id="rePw" name="rePw" required minlength="6">
+                
+                <input class="button" type="submit" value="Change Password">
+                <p class="error_mesage" id="signup_error"></p> <!-- room for error mesage when fail log in. remember to add-->
+            </form>
+        </div>
     </script>
     </head>
 
