@@ -8,7 +8,9 @@ function getToken() {
 
 function displayView (){
     if(getToken() != null){
-        document.getElementById("viewport").innerHTML = document.getElementById("profile_view").innerHTML
+        document.getElementById("viewport").innerHTML = document.getElementById("profile_view").innerHTML;
+        getAccountInfo();
+        messageWall();
     } else {
         document.getElementById("viewport").innerHTML = document.getElementById("welcome_view").innerHTML;        
     }
@@ -117,4 +119,37 @@ function signOut() {
     localStorage.removeItem("token");
     // Update view
     displayView();
+}
+
+function getAccountInfo() {
+    let response = serverstub.getUserDataByToken(getToken());
+    if(response.success){
+        document.getElementById("fNameInfo").innerHTML = response.data.firstname;
+        document.getElementById("lNameInfo").innerHTML = response.data.familyname;
+        document.getElementById("genderInfo").innerHTML = response.data.gender;
+        document.getElementById("cityInfo").innerHTML = response.data.city;
+        document.getElementById("countryInfo").innerHTML = response.data.country;
+        document.getElementById("emailInfo").innerHTML = response.data.email;
+    }
+}
+
+function messagePost(form) {
+    let response = serverstud.postMessage(getToken(), form.postTextarea.value, form.toEmail.value);
+    if(response.success) {
+        document.getElementById("postForm").reset();
+    }
+    document.getElementById("errorMessage").innerHTML = response.message;
+}
+
+function messageWall() {
+    let response = serverstub.getUserMessagesByToken(getToken());
+
+    if(response.success) {
+        let feed = document.getElementById("messages");
+        let messages = "";
+        response.data.forEach((msg) => messages += `<dt>${msg.writer}</dt><dd>${msg.content}</dd>)`);
+        feed.innerHTML = `<dl>${messages}</dl>`;
+    } else {
+        document.getElementById("errorMessage").innerHTML = response.message;
+    }
 }

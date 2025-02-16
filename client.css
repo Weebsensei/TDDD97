@@ -93,13 +93,25 @@ input, select {
 }
 
 .tab-content {
+    display: flex;
     padding: 20px;
     margin: auto;
-    
 }
 
 .tab-content h2 {
     text-align: center;
+}
+
+.tab-content #accountInfo {
+    background-color: beige;
+    width: 250px;
+    text-align: center;
+    flex: 1;
+}
+
+.messageInput {
+    box-sizing: border-box;
+    width: 100%;
 }
 
 #account button {
