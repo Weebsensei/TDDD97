@@ -10,7 +10,6 @@ function displayView (){
     if(getToken() != null){
         document.getElementById("viewport").innerHTML = document.getElementById("profile_view").innerHTML;
         getAccountInfo();
-        messageWall();
     } else {
         document.getElementById("viewport").innerHTML = document.getElementById("welcome_view").innerHTML;        
     }
@@ -26,7 +25,6 @@ function login(form) {
 }
 
 function loginValidate(email, password) {
-
     // Call Call server sign-in function
     let response = serverstub.signIn(email, password);
 
@@ -36,15 +34,12 @@ function loginValidate(email, password) {
         displayView();
     } else {
         document.getElementById("errorMessage").innerHTML = response.message;
-        errorElement.style.display = "block";
     }
-    return true;
-
 }
 
 function passwdValidation(passwd, repasswd) {
     if (passwd !== repasswd) {
-        document.getElementById("errorMessage").innerHTML = "Passwords doesn't match. Try again.";
+        document.getElementById("errorMessage").innerHTML = "Passwords doesn't match";
         return false;
     }
     return true;
@@ -134,21 +129,24 @@ function getAccountInfo() {
 }
 
 function messagePost(form) {
-    let response = serverstud.postMessage(getToken(), form.postTextarea.value, form.toEmail.value);
+    let reciever = form.toEmail.value;
+    let message = form.postTextarea.value;
+    let response = serverstub.postMessage(getToken(), message, reciever);
+    
     if(response.success) {
         document.getElementById("postForm").reset();
     }
+    
     document.getElementById("errorMessage").innerHTML = response.message;
 }
 
-function messageWall() {
+function loadMessages() {
     let response = serverstub.getUserMessagesByToken(getToken());
 
     if(response.success) {
-        let feed = document.getElementById("messages");
         let messages = "";
-        response.data.forEach((msg) => messages += `<dt>${msg.writer}</dt><dd>${msg.content}</dd>)`);
-        feed.innerHTML = `<dl>${messages}</dl>`;
+        response.data.forEach((msg) => messages += `<dt>${msg.writer}</dt><dd>${msg.content}</dd>`);
+        document.getElementById("messages").innerHTML = messages;
     } else {
         document.getElementById("errorMessage").innerHTML = response.message;
     }

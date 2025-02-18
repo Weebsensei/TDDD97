@@ -4,15 +4,17 @@ body {
 
 #center {
     margin: auto;
-    margin-top: 100px;
+    padding-top: 100px;
     width: 600px;
     height: 400px;
 }
 
-.welcome_element {
+.element {
     background-color: white;
+    box-sizing: border-box;
     border-style: solid;
     position: relative;
+    padding: 2px;
 }
 
 #twidder {
@@ -24,50 +26,42 @@ body {
 #login {
     float: right;
     width: 250px;
-    height: 95px;
-    
+    height: 100px;
+    padding: 2px;
 }
 
 #signup {
     float: right;
     width: 250px;
-    margin-top: 7px;
-    height: 295px;
+    margin-top: 10px;
+    height: 290px;
+    padding: 2px;
 }
 
-.signup_error p {
-    grid-column: span 2;
-}
-
-.button{
-    grid-column: 2;
-    justify-self: end;
-    width: auto;
+.welcomeButton{
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
     padding: 2px 10px;
     margin: 4px;
 }
 
-.signuptext {
-    grid-column: span 2;
-    width: auto;
-    justify-self: center;
+.element .formInput {
+    display: flex;
+    margin-top: 2px;
 }
 
-form {
-    display: grid;
-    grid-template-columns: 125px 1fr; /* Label width fixed, inputs take the remaining space */
-    gap: 1px;
-    max-width: 400px; /* Adjust as needed */
-    margin: auto; /* Center the form */
-    align-items: center; /* Aligns labels and inputs vertically */
+.element .formInput label {
+    flex-grow: 1;
 }
 
-label {
-    text-align: left;
+.element .formInput input {
+    box-sizing: border-box;
+    width: 140px;
 }
 
-input, select {
-    width: 100%;
+.element .formInput select {
+    width: 140px;
     box-sizing: border-box; /* Ensures padding doesn’t affect width */
     margin-top: 2px;
 }
@@ -75,7 +69,7 @@ input, select {
 #tabs {
     display: flex;
     width: 100%;
-    border-bottom: 2px solid #4e0303;
+    border-bottom: 2px solid #000000;
 }
 
 .tab {
@@ -88,34 +82,58 @@ input, select {
 }
 
 .tab.active {
-    border-bottom: 2px solid rgb(2, 122, 48);
+    border-bottom: 2px solid rgb(0, 125, 0);
     font-weight: bold;
 }
 
-.tab-content {
-    display: flex;
-    padding: 20px;
-    margin: auto;
+.tab-content div {
+    margin-bottom: 10px;
 }
 
-.tab-content h2 {
+.tab-content h3 {
     text-align: center;
-}
-
-.tab-content #accountInfo {
-    background-color: beige;
-    width: 250px;
-    text-align: center;
-    flex: 1;
 }
 
 .messageInput {
     box-sizing: border-box;
-    width: 100%;
+    width: 200px;
 }
 
-#account button {
-    width: 25%;
-    display: block;
+#account {
+    padding-top: 20px;
+    width: 300px;
     margin: auto;
+}
+
+.profileButton {
+    width: 293px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#home {
+    width: 600px;
+    padding-top: 50px;
+    margin: auto;
+}
+
+#accountInfo {
+    float: left;
+    width: 250px;
+    height: 250px;
+}
+
+#messagePost {
+    float: right;
+    width: 340px;
+    height: 250px;
+}
+
+#messageWall {
+    clear: both;
+}
+
+#messages {
+    height: 200px;
+    overflow-y: scroll;
 }
