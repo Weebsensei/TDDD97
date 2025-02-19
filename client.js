@@ -9,7 +9,8 @@ function getToken() {
 function displayView (){
     if(getToken() != null){
         document.getElementById("viewport").innerHTML = document.getElementById("profile_view").innerHTML;
-        getAccountInfo();
+        let response = serverstub.getUserDataByToken(getToken());
+        getAccountInfo(response.data, "home_");
     } else {
         document.getElementById("viewport").innerHTML = document.getElementById("welcome_view").innerHTML;        
     }
@@ -116,16 +117,13 @@ function signOut() {
     displayView();
 }
 
-function getAccountInfo() {
-    let response = serverstub.getUserDataByToken(getToken());
-    if(response.success){
-        document.getElementById("fNameInfo").innerHTML = response.data.firstname;
-        document.getElementById("lNameInfo").innerHTML = response.data.familyname;
-        document.getElementById("genderInfo").innerHTML = response.data.gender;
-        document.getElementById("cityInfo").innerHTML = response.data.city;
-        document.getElementById("countryInfo").innerHTML = response.data.country;
-        document.getElementById("emailInfo").innerHTML = response.data.email;
-    }
+function getAccountInfo(data, page) {
+    document.getElementById(page + "fNameInfo").innerHTML = data.firstname;
+    document.getElementById(page + "lNameInfo").innerHTML = data.familyname;
+    document.getElementById(page + "genderInfo").innerHTML = data.gender;
+    document.getElementById(page + "cityInfo").innerHTML = data.city;
+    document.getElementById(page + "countryInfo").innerHTML = data.country;
+    document.getElementById(page + "emailInfo").innerHTML = data.email;
 }
 
 function messagePost(form) {
@@ -135,9 +133,21 @@ function messagePost(form) {
     
     if(response.success) {
         document.getElementById("postForm").reset();
+    } else {
+        document.getElementById("errorMessage").innerHTML = response.message;
     }
+}
+
+function browseMessagePost(form) {
+    let reciever = form.browsetoEmail.value;
+    let message = form.browsepostTextarea.value;
+    let response = serverstub.postMessage(getToken(), message, reciever);
     
-    document.getElementById("errorMessage").innerHTML = response.message;
+    if(response.success) {
+        document.getElementById("browsePostForm").reset();
+    } else {
+        document.getElementById("errorMessage").innerHTML = response.message;
+    }
 }
 
 function loadMessages() {
@@ -149,5 +159,28 @@ function loadMessages() {
         document.getElementById("messages").innerHTML = messages;
     } else {
         document.getElementById("errorMessage").innerHTML = response.message;
+    }
+}
+
+
+function loadBrowseMessages() {
+    let target = document.getElementById("browse_emailInfo").innerHTML;
+    let response = serverstub.getUserMessagesByEmail(getToken(), target);
+    
+    if(response.success) {
+        let messages = "";
+        response.data.forEach((msg) => messages += `<dt>${msg.writer}</dt><dd>${msg.content}</dd>`);
+        document.getElementById("browse_messages").innerHTML = messages;
+    } else {
+        document.getElementById("errorMessage").innerHTML = response.message;
+    }
+}
+
+function lookupEmail(form) {
+    let target = form.searchEmail.value;
+    let response = serverstub.getUserDataByEmail(getToken(), target);
+    if(response.success){
+        getAccountInfo(response.data, "browse_");
+        document.getElementById("searchEmailform").reset();
     }
 }

@@ -20,7 +20,7 @@
                         </div>
 
                         <input class="welcomeButton" type="submit" value="login">
-                        <p id="errorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                        <p id="LoginErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
                     </form>
                 </div>
     
@@ -72,7 +72,7 @@
                         </div>
 
                         <input class="welcomeButton" type="submit" value="Sign Up">
-                        <p id="errorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                        <p id="SignupErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
                     </form>
                 </div>
             </div>
@@ -90,50 +90,105 @@
                 <table>
                     <tr>
                         <td>First Name</td>
-                        <td id="fNameInfo"></td>
+                        <td id="home_fNameInfo"></td>
                     </tr>
                     <tr>
                         <td>Family Name</td>
-                        <td id="lNameInfo"></td>
+                        <td id="home_lNameInfo"></td>
                     </tr>
                     <tr>
                         <td>Gender</td>
-                        <td id="genderInfo"></td>
+                        <td id="home_genderInfo"></td>
                     </tr>
                     <tr>
                         <td>City</td>
-                        <td id="cityInfo"></td>
+                        <td id="home_cityInfo"></td>
                     </tr>
                     <tr>
                         <td>Country</td>
-                        <td id="countryInfo"></td>
+                        <td id="home_countryInfo"></td>
                     </tr>
                     <tr>
                         <td>Email</td>
-                        <td id="emailInfo"></td>
+                        <td id="home_emailInfo"></td>
                     </tr>
                 </table>
             </div>
             <div class="element" id="messagePost">
-                <form onsubmit="messagePost(this);return false;" id="post_form">
-                    <div id="formInput">
+                <form onsubmit="messagePost(this);return false;" id="postForm">
+                    <div class="formInput">
                         <label for="toEmail">Reciever Email</label>
                         <input type="email" id="toEmail" name="toEmail" required>
                     </div>
                     <label>Message</label>
-                    <textarea class="messageInput" id="postTextarea" name="postTextarea" rows="6" form="post_form"></textarea>
-                    <button class="profileButton" type="submit">Post</button>
+                    <textarea class="messageInput" id="postTextarea" name="postTextarea" rows="6" form="postForm"></textarea>
+                    <p class="error_mesage" id="PostErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                    <button class="welcomeButton" type="submit">Post</button>
                 </form>
             </div>
             <div class="element" id="messageWall">
                 <h3>Messages</h3>
-                <button class="profileButton" onclick="loadMessages()">Refresh</button>
+                <button class="LwelcomeButton" onclick="loadMessages()">Refresh</button>
                 <div id="messages"></div>
             </div>
         </div>
         <div id="browse" class="tab-content" style="display: none;">
-            <h2>Browse</h2>
-            <p>Here you can browse other users.</p>
+            <div class="element" id="emailSearch">
+                <h3>Browse</h3>
+                <form onsubmit="lookupEmail(this);return false;" id="searchEmailform">
+                    <div class="formInput">
+                        <label for="searchEmail">Look Up</label>
+                        <input type="email" id="searchEmail" name="searchEmail" required>
+                    </div>
+                    <button class="welcomeButton" type="submit">Look up</button>
+                </form>
+            </div>
+            <div class="element" id="accountInfo">
+                <h3>Home</h3>
+                <table>
+                    <tr>
+                        <td>First Name</td>
+                        <td id="browse_fNameInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Family Name</td>
+                        <td id="browse_lNameInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Gender</td>
+                        <td id="browse_genderInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>City</td>
+                        <td id="browse_cityInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Country</td>
+                        <td id="browse_countryInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td id="browse_emailInfo"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="element" id="messagePost">
+                <form onsubmit="browseMessagePost(this);return false;" id="browsePostForm">
+                    <div class="formInput">
+                        <label for="browsetoEmail">Reciever Email</label>
+                        <input type="email" id="browsetoEmail" name="browsetoEmail" required>
+                    </div>
+                    <label>Message</label>
+                    <textarea class="messageInput" id="browsepostTextarea" name="browsepostTextarea" rows="6" form="browsePostForm"></textarea>
+                    <p class="error_mesage" id="PostErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                    <button class="welcomeButton" type="submit">Post</button>
+                </form>
+            </div>
+            <div class="element" id="messageWall">
+                <h3>Messages</h3>
+                <button class="LwelcomeButton" onclick="loadBrowseMessages()">Refresh</button>
+                <div id="browse_messages"></div>
+            </div>
         </div>
     
         <div class="tab-content" id="account" style="display: none;">
@@ -153,10 +208,8 @@
                     <div class="formInput">
                         <label for="rePw">Repeat Password</label>
                         <input type="password" id="rePw" name="rePw" required minlength="6">
-            
                     </div>
                     <input class="profileButton" type="submit" value="Change Password">
-                    <p class="error_mesage" id="errorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
                 </form>
             </div>
             <div class="element">
