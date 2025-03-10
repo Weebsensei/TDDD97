@@ -18,7 +18,7 @@ def disconnect():
 
 def create_contact(name, number):
     try:
-        get_db().execute("insert into contact values(?, ?);", [name, number]);
+        get_db().execute("insert into contact values(?, ?);", [name, number])
         get_db().commit()
         return True
     except:
