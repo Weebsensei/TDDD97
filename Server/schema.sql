@@ -7,7 +7,7 @@ DROP TABLE IF EXISTS users;
 
 -- creates user table 
 CREATE TABLE users (
-        email VARCHAR(50) NOT NULL PRIMARY KEY,
+        email VARCHAR(50) UNIQUE NOT NULL PRIMARY KEY,
         password TEXT NOT NULL,
         first_name VARCHAR(50) NOT NULL,
         family_name VARCHAR(50) NOT NULL,
