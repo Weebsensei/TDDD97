@@ -8,18 +8,20 @@ function getToken() {
 
 function httpRequest(method, url, data, success, failure){
     let xml = new XMLHttpRequest();
-    xml.open(method, url, true);
-    xml.setRequestHeader('Content-Type', 'application/json');
     xml.onreadystatechange = function() {
         if (xml.readyState === 4){
-            response = JSON.parse(xml.responseText)
+            let response = JSON.parse(xml.responseText)
             if (xml.status === 200 || xml.status === 201){
-                success(response.data);           
+                success(response);           
             } else {
                 failure(xml.status);
             }
         }
-    };
+    }
+    xml.open(method, url, true);
+    xml.setRequestHeader('Content-Type', 'application/json');
+    // SUS?
+    xml.setRequestHeader('Authorization', getToken());
     xml.send(JSON.stringify(data));
 }
 
@@ -27,8 +29,8 @@ function httpRequest(method, url, data, success, failure){
 function displayView (){
     if(getToken() != null){
         document.getElementById("viewport").innerHTML = document.getElementById("profile_view").innerHTML;
-        let response = serverstub.getUserDataByToken(getToken());
-        getAccountInfo(response.data, "home_");
+        // let response = serverstub.getUserDataByToken(getToken());
+        // getAccountInfo(response.data, "home_");
     } else {
         document.getElementById("viewport").innerHTML = document.getElementById("welcome_view").innerHTML;        
     }
@@ -169,12 +171,10 @@ function changePassword(form) {
 } 
 
 function signOut() {
-    // Call server signOut function
     token = getToken();
     httpRequest('DELETE', '/sign_out', token,
         function () {
             localStorage.removeItem("token");
-            displayView();
         },
         function (status) {
             if(status === 400){
@@ -189,11 +189,8 @@ function signOut() {
             else if(status === 500) {
                 alert("SIGN OUT 500")
             }
-        })
-    // serverstub.signOut(getToken());
-    // Remove token from storage
-    localStorage.removeItem("token");
-    // Update view
+        }
+    );
     displayView();
 }
 

@@ -11,7 +11,7 @@ CREATE TABLE users (
         password TEXT NOT NULL,
         first_name VARCHAR(50) NOT NULL,
         family_name VARCHAR(50) NOT NULL,
-        gender VARCHAR(6) NOT NULL CHECK (gender IN ('Male', 'Female', 'Other')),
+        gender VARCHAR(6) NOT NULL CHECK (gender IN ('male', 'female', 'other')),
         city VARCHAR(50) NOT NULL,
         country VARCHAR(50) NOT NULL);
 
@@ -36,6 +36,6 @@ VALUES ('erik_hugo@liu.se',
         '123123', -- bcrypt hash password example
         'erik',
         'hugo',
-        'Other',
+        'other',
         'Malmö',
         'Sweden');

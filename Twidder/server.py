@@ -48,6 +48,7 @@ def sign_up():
         dh.create_user(data['email'], data['password'], 
                        data['firstname'], data['familyname'], 
                        data['gender'], data['city'], data['country'])
+        
         return json.dumps({'message': 'new user added successfully'}), 201
     except:
         return json.dumps({'message': 'Something went wrong?'}), 500
@@ -78,14 +79,14 @@ def sign_in():
 def sign_out():
     token = request.headers.get('Authorization')
     if token is None:
-        return json.dumps({'success': False, 'message': 'bad token dude'}), 205
-    if not dh.get_email_by_token(token):
-        return json.dumps({'success': False, 'message': 'bad token dude'}), 201
+        return jsonify({'message': 'No Token in request'}), 400
+    if not dh.check_signedin(token):
+        return jsonify({'message': 'User not loggedin'}), 401
     try:
         dh.sign_off(token)
-        return json.dumps({'success': True, 'message': 'Successfully signed out'}), 200
+        return jsonify({'message': 'Successfully signed out'}), 200
     except:
-        return json.dumps({'success': False, 'message': 'bad token dude'}), 202
+        return jsonify({'message': 'Failed to log out, try again'}), 500
 
 
 
@@ -114,7 +115,7 @@ def get_user_data_by_email(email):
         return json.dumps({'success': False, 'message': 'Incorrect email'})
     
     signed_in = dh.check_signedin(token)
-    if signed_in == None:
+    if signed_in == False:
         return json.dumps({'success': False, 'message': 'Not logged in'})
     user = dh.get_user_by_email(email)
     print(user)
@@ -147,8 +148,7 @@ def post_mesage():
         return json.dumps({'success': True, 'message': 'Message has been posted'})
     except:
         return json.dumps({'success': False, 'message': 'Message has not been posted'})
-
-
+    
 @app.route('/get_user_messages_by_token', methods=['GET'])
 def get_user_messages_by_token():
     token = request.headers.get('Authorization')
@@ -172,7 +172,7 @@ def get_user_messages_by_email(email):
         return json.dumps({'success': False, 'message': 'Missing token'})
     
     signed_in = dh.check_signedin(token)
-    if signed_in == None:
+    if signed_in == False:
         return json.dumps({'success': False, 'message': 'Not logged in'})
     
     if dh.get_user_by_email(email) is None:

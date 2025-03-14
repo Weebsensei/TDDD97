@@ -1,0 +1,17 @@
+<html>
+    <head>
+        <title>Save Contact</title>
+        <link rel="stylesheet" type="text/css" href="/static/style.css">
+        <script type="text/javascript" src="/static/logic.js"></script>
+ 
+    </head>
+    <body>
+        <form id="savecontact" onsubmit="saveContact(this);return false;">
+            <input type="text" name="name" id="name" placeholder="Enter a name" required>
+            <input type="text" name="phone" id="phone" placeholder="phone" required>
+            <input type="submit" value="Save" id="submit">
+            <div id="feedback"></div>
+        </form>
+
+    </body>
+</html>

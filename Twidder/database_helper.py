@@ -61,11 +61,11 @@ def get_token_by_email(email):
     except:
         return None
         
-def create_user(email, password, firstname, familyname, 
+def create_user(email, password, first_name, family_name, 
                 gender, city, country):
     try:
-        get_db().execute("INSERT INTO users values(?, ?, ?, ?, ?, ?, ?);", 
-                         [email, password, firstname, familyname, 
+        get_db().execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?);", 
+                         [email, password, first_name, family_name, 
                           gender, city, country])
         get_db().commit()
         return True
@@ -74,7 +74,7 @@ def create_user(email, password, firstname, familyname,
 
 def sign_in(token, email):
     try:
-        get_db().execute("INSERT INTO signed_in VALUES (?, ?);", [token, email])
+        get_db().execute("INSERT INTO signed_in VALUES (?, ?)", [token, email])
         get_db().commit()
         return True
     except:
@@ -83,8 +83,6 @@ def sign_in(token, email):
 
 def sign_off(token):
     try:
-        check_signedin(token)
-
         get_db().execute("DELETE FROM signed_in WHERE token = ?", [token])
         get_db().commit()
         return True
@@ -112,8 +110,8 @@ def check_signedin(token):
     cursor = get_db().execute("SELECT email FROM signed_in WHERE token = ?", [token])
     email = cursor.fetchone()
     if email is None:
-        return None
-    return email[0]
+        return False
+    return True
 
 def post_message(sender_email, reciever_email, message):
     try:
