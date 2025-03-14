@@ -27,6 +27,31 @@ def close_connection(exception):
 def index():
     return app.send_static_file('client.html')
 
+@app.route('/sign_up', methods=['POST'])
+def sign_up():
+    data = request.get_json()
+    if data is None:
+        return json.dumps({'message': 'No inputs'}), 400
+
+    if not('email' in data or 'password' in data or 
+          'firstname' in data or 'familyname' in data or 
+          'gender' in data or 'city' in data or 
+          'country' in data or len(data['password'])>=6):
+        return json.dumps({'message': 'Missing input'}), 400
+    if (exists(data['email'])):
+        return json.dumps({'message': 'User already exists'}), 409
+
+    elif not emailValid(data['email']):
+        return json.dumps({'message': 'Email is not valid'}), 400
+    
+    try:
+        dh.create_user(data['email'], data['password'], 
+                       data['firstname'], data['familyname'], 
+                       data['gender'], data['city'], data['country'])
+        return json.dumps({'message': 'new user added successfully'}), 201
+    except:
+        return json.dumps({'message': 'Something went wrong?'}), 500
+
 @app.route('/sign_in', methods=['POST'])
 def sign_in():
     data = request.get_json()
@@ -52,15 +77,15 @@ def sign_in():
 @app.route('/sign_out', methods=['DELETE'])
 def sign_out():
     token = request.headers.get('Authorization')
-    if not dh.get_email_by_token(token):
-        return json.dumps({'success': False, 'message': 'bad token dude'})
     if token is None:
-        return json.dumps({'success': False, 'message': 'bad token dude'})
+        return json.dumps({'success': False, 'message': 'bad token dude'}), 205
+    if not dh.get_email_by_token(token):
+        return json.dumps({'success': False, 'message': 'bad token dude'}), 201
     try:
         dh.sign_off(token)
-        return json.dumps({'success': True, 'message': 'Successfully signed out'})
+        return json.dumps({'success': True, 'message': 'Successfully signed out'}), 200
     except:
-        return json.dumps({'success': False, 'message': 'bad token dude'})
+        return json.dumps({'success': False, 'message': 'bad token dude'}), 202
 
 
 
@@ -169,30 +194,6 @@ def exists(email):
     else:
         result = True
     return result
-
-@app.route('/sign_up', methods=['POST'])
-def sign_up():
-    data = request.get_json()
-    if data is None:
-        return json.dumps({'success': False, 'message': 'No inputs'})
-
-    if not('email' in data or 'password' in data or 
-          'firstname' in data or 'familyname' in data or 
-          'gender' in data or 'city' in data or 
-          'country' in data or len(data['password'])>=6):
-        return json.dumps({'success': False, 'message': 'Missing input'})
-    if (exists(data['email'])):
-        return json.dumps({'success': False, 'message': 'User already exists'}) 
-
-    elif not emailValid(data['email']):
-        return json.dumps({'success': False, 'message': 'Email is not valid'})
-    
-    if dh.create_user(data['email'], data['password'], 
-                      data['firstname'], data['familyname'], 
-                      data['gender'], data['city'], data['country']):
-        return json.dumps({'success': True, 'message': 'new user added successfully'})
-    else:
-        return json.dumps({'success': False, 'message': 'Something went wrong?'})
 
 @app.route('/change_password', methods=['PUT'])
 def change_password():

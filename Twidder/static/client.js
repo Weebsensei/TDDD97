@@ -8,19 +8,18 @@ function getToken() {
 
 function httpRequest(method, url, data, success, failure){
     let xml = new XMLHttpRequest();
+    xml.open(method, url, true);
+    xml.setRequestHeader('Content-Type', 'application/json');
     xml.onreadystatechange = function() {
         if (xml.readyState === 4){
             response = JSON.parse(xml.responseText)
-            if (xml.status === 200){
+            if (xml.status === 200 || xml.status === 201){
                 success(response.data);           
             } else {
                 failure(xml.status);
-                alert('Something went wrong! OWO(Error: 400');
             }
         }
     };
-    xml.open(method, url, true);
-    xml.setRequestHeader('Content-Type', 'application/json');
     xml.send(JSON.stringify(data));
 }
 
@@ -57,14 +56,17 @@ function loginValidate(email, password) {
             displayView();
         },
         function(status){
-            if (status == 400) {
-                alert('Something went wrong! OWO Error: 400');
+            if (status === 400) {
+                alert('SIGN IN 400');
             } 
-            else if (status = 404) {
-                alert('User not found');
+            else if (status ===  401) {
+                alert('SIGN IN 401');
             } 
-            else {
-                alert('Something went wrong! OWO(Error: ${xml.status})');
+            else if (status  === 405) {
+                alert('SIGN IN 405');
+            } 
+            else if (status  === 500) {
+                alert('SIGN IN 500');
             }
 
         }
@@ -89,22 +91,32 @@ function signup(form) {
         try{
             // Create a data object for server call
             let dataObject = {
-                email: form.email.value,
-                password: form.passwd.value,
-                firstname: form.fname.value,
-                familyname: form.lname.value,
-                gender: form.gender.value,
-                city: form.city.value,
-                country: form.country.value
+                'email': form.email.value,
+                'password': form.passwd.value,
+                'firstname': form.fname.value,
+                'familyname': form.lname.value,
+                'gender': form.gender.value,
+                'city': form.city.value,
+                'country': form.country.value
             };
             httpRequest('POST', '/sign_up', dataObject,
                 function (response){
                     document.getElementById("errorMessage").innerHTML = response.message;
-                    loginValidate(email, passwd);
+                    // loginValidate(email, passwd);
                 },
                 function(status){
-                    if(status = 404)
-                        alert("Something went wrong! UWU ERROR 404")
+                    if(status === 400){
+                        alert("SIGN UP 400")
+                    }
+                    else if(status === 409) {
+                        alert("SIGN UP 409")
+                    }
+                    else if(status === 405) {
+                        alert("SIGN UP 405")
+                    }
+                    else if(status === 500) {
+                        alert("SIGN UP 500")
+                    }
                 }
             );
 
@@ -158,7 +170,27 @@ function changePassword(form) {
 
 function signOut() {
     // Call server signOut function
-    serverstub.signOut(getToken());
+    token = getToken();
+    httpRequest('DELETE', '/sign_out', token,
+        function () {
+            localStorage.removeItem("token");
+            displayView();
+        },
+        function (status) {
+            if(status === 400){
+                alert("SIGN OUT 400")
+            }
+            else if(status === 401) {
+                alert("SIGN OUT 401")
+            }
+            else if(status === 405) {
+                alert("SIGN OUT 405")
+            }
+            else if(status === 500) {
+                alert("SIGN OUT 500")
+            }
+        })
+    // serverstub.signOut(getToken());
     // Remove token from storage
     localStorage.removeItem("token");
     // Update view
