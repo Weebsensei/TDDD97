@@ -1,0 +1,165 @@
+body {
+    background-color: rgb(173, 216, 230);
+}
+
+#center {
+    margin: auto;
+    padding-top: 100px;
+    width: 600px;
+    height: 400px;
+}
+
+.element {
+    background-color: white;
+    box-sizing: border-box;
+    border-style: solid;
+    position: relative;
+    padding: 2px;
+}
+
+#twidder {
+    float: left;
+    width: 340px;
+    height: 400px;
+}
+
+#login {
+    float: right;
+    width: 250px;
+    height: 100px;
+    padding: 2px;
+}
+
+#signup {
+    float: right;
+    width: 250px;
+    margin-top: 10px;
+    height: 290px;
+    padding: 2px;
+}
+
+.LwelcomeButton{
+    position: absolute;
+    top: 15.55px;
+    left: 4px;
+    padding: 2px 10px;
+    margin: 4px;
+}
+
+.welcomeButton{
+    position: absolute;
+    bottom: 2px;
+    right: 2px;
+    padding: 2px 10px;
+    margin: 4px;
+}
+
+.element .formInput {
+    display: flex;
+    margin-top: 2px;
+}
+
+.element .formInput label {
+    flex-grow: 1;
+}
+
+.element .formInput input {
+    box-sizing: border-box;
+    width: 140px;
+}
+
+.element .formInput select {
+    width: 140px;
+    box-sizing: border-box; /* Ensures padding doesn’t affect width */
+    margin-top: 2px;
+}
+
+#tabs {
+    display: flex;
+    width: 100%;
+    border-bottom: 2px solid #000000;
+}
+
+.tab {
+    background: none;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    flex: 1;
+}
+
+.tab.active {
+    border-bottom: 2px solid rgb(0, 125, 0);
+    font-weight: bold;
+}
+
+.tab-content div {
+    margin-bottom: 10px;
+}
+
+.tab-content h3 {
+    text-align: center;
+}
+
+.messageInput {
+    box-sizing: border-box;
+    width: 200px;
+}
+
+#account {
+    padding-top: 20px;
+    width: 300px;
+    margin: auto;
+}
+
+.profileButton {
+    width: 293px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.SearchButton {
+    width: 200px;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#home {
+    width: 600px;
+    padding-top: 50px;
+    margin: auto;
+}
+
+#accountInfo {
+    float: left;
+    width: 250px;
+    height: 250px;
+}
+
+#messagePost {
+    float: right;
+    width: 340px;
+    height: 250px;
+}
+
+#messageWall {
+    clear: both;
+}
+
+#messages {
+    height: 200px;
+    overflow-y: scroll;
+}
+
+#browse {
+    width: 600px;
+    padding-top: 50px;
+    margin: auto;
+}
+
+#emailSearch {
+    float: left;
+    width: 600px;
+    height: 150px;
+}

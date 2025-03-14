@@ -1,0 +1,225 @@
+<html>
+    <head>
+        <link href="/static/client.css" type="text/css" rel="stylesheet">
+        <script src="/static/client.js" type="text/javascript"></script>
+        <script type="text/view" id="welcome_view">
+            <div id="center">   
+                <img class="element" id="twidder" src="static/wimage.png">
+    
+                <div class="element" id="login">
+                    <form onsubmit="login(this);return false;" id="login_form">
+                        <div class="formInput">
+                            <label for="email_input"> Email </label>
+                            <input type="email" id="email_input" name="email" required>
+                        </div>
+
+                        <div class="formInput">
+                            <label for="passwd_input"> Password </label>
+                            <input type="password" id="passwd_input" name="passwd" required minlength="6">
+                        </div>
+
+                        <input class="welcomeButton" type="submit" value="login">
+                        <p id="LoginErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                    </form>
+                </div>
+    
+                <div class="element" id="signup">
+                    <form onsubmit="signup(this);return false;" id="signup_form">
+                        <h3>Sign up here</h3>
+                        <div class="formInput">
+                            <label for="fname">First Name</label>
+                            <input type="text" id="fname" name="fname" required>
+                        </div>
+
+                        <div class="formInput">
+                            <label for="lname">Family Name</label>
+                            <input type="text" id="lname" name="lname" required>
+                        </div>
+
+                        <div class="formInput">
+                            <label for="gender">Gender</label>
+                            <select id="gender" name="gender" required>
+                                <option value="" disabled selected>Select gender</option>
+                                <option value="male">Male</option>
+                                <option value="female">Female</option>
+                            </select>
+                        </div>
+
+                        <div class="formInput">
+                            <label for="city">City</label>
+                            <input type="text" id="city" name="city" required>
+                        </div>
+
+                        <div class="formInput">
+                            <label for="country">Country</label>
+                            <input type="text" id="country" name="country" required>
+                        </div>
+
+                        <div class="formInput">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+
+                        <div class="formInput">
+                            <label for="passwd">Password</label>
+                            <input type="password" id="passwd" name="passwd" required minlength="6">
+                        </div>
+
+                        <div class="formInput">
+                            <label for="repasswd">Repeat PSW</label>
+                            <input type="password" id="repasswd" name="repasswd" required>
+                        </div>
+
+                        <input class="welcomeButton" type="submit" value="Sign Up">
+                        <p id="SignupErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                    </form>
+                </div>
+            </div>
+        </script>
+    <script id="profile_view" type="text/view">
+        <div id="tabs">
+            <button class="tab active" onclick="showTab('home')">Home</button>
+            <button class="tab" onclick="showTab('browse')">Browse</button>
+            <button class="tab" onclick="showTab('account')">Account</button>
+        </div> 
+
+        <div class="tab-content" id="home" >
+            <div class="element" id="accountInfo">
+                <h3>Home</h3>
+                <table>
+                    <tr>
+                        <td>First Name</td>
+                        <td id="home_fNameInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Family Name</td>
+                        <td id="home_lNameInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Gender</td>
+                        <td id="home_genderInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>City</td>
+                        <td id="home_cityInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Country</td>
+                        <td id="home_countryInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td id="home_emailInfo"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="element" id="messagePost">
+                <form onsubmit="messagePost(this);return false;" id="postForm">
+                    <div class="formInput">
+                        <label for="toEmail">Reciever Email</label>
+                        <input type="email" id="toEmail" name="toEmail" required>
+                    </div>
+                    <label>Message</label>
+                    <textarea class="messageInput" id="postTextarea" name="postTextarea" rows="6" form="postForm"></textarea>
+                    <p class="error_mesage" id="PostErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                    <button class="welcomeButton" type="submit">Post</button>
+                </form>
+            </div>
+            <div class="element" id="messageWall">
+                <h3>Messages</h3>
+                <button class="LwelcomeButton" onclick="loadMessages()">Refresh</button>
+                <div id="messages"></div>
+            </div>
+        </div>
+        <div id="browse" class="tab-content" style="display: none;">
+            <div class="element" id="emailSearch">
+                <h3>Browse</h3>
+                <form onsubmit="lookupEmail(this);return false;" id="searchEmailform">
+                    <div class="formInput">
+                        <label for="searchEmail">Look Up</label>
+                        <input type="email" id="searchEmail" name="searchEmail" required>
+                    </div>
+                    <button class="welcomeButton" type="submit">Look up</button>
+                </form>
+            </div>
+            <div class="element" id="accountInfo">
+                <h3>Home</h3>
+                <table>
+                    <tr>
+                        <td>First Name</td>
+                        <td id="browse_fNameInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Family Name</td>
+                        <td id="browse_lNameInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Gender</td>
+                        <td id="browse_genderInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>City</td>
+                        <td id="browse_cityInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Country</td>
+                        <td id="browse_countryInfo"></td>
+                    </tr>
+                    <tr>
+                        <td>Email</td>
+                        <td id="browse_emailInfo"></td>
+                    </tr>
+                </table>
+            </div>
+            <div class="element" id="messagePost">
+                <form onsubmit="browseMessagePost(this);return false;" id="browsePostForm">
+                    <div class="formInput">
+                        <label for="browsetoEmail">Reciever Email</label>
+                        <input type="email" id="browsetoEmail" name="browsetoEmail" required>
+                    </div>
+                    <label>Message</label>
+                    <textarea class="messageInput" id="browsepostTextarea" name="browsepostTextarea" rows="6" form="browsePostForm"></textarea>
+                    <p class="error_mesage" id="PostErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                    <button class="welcomeButton" type="submit">Post</button>
+                </form>
+            </div>
+            <div class="element" id="messageWall">
+                <h3>Messages</h3>
+                <button class="LwelcomeButton" onclick="loadBrowseMessages()">Refresh</button>
+                <div id="browse_messages"></div>
+            </div>
+        </div>
+    
+        <div class="tab-content" id="account" style="display: none;">
+            <div class="element">
+                <h3>Change Password</h3>
+                <form onsubmit="changePassword(this);return false;" id="changePassword">
+                    <div class="formInput">
+                        <label for="oldPw">Old Password</label>
+                        <input type="password" id="oldPw" name="oldPw" required minlength="6">
+
+                    </div>
+                    <div class="formInput">
+                        <label for="newPw">New Password</label>
+                        <input type="password" id="newPw" name="newPw" required minlength="6">
+
+                    </div>
+                    <div class="formInput">
+                        <label for="rePw">Repeat Password</label>
+                        <input type="password" id="rePw" name="rePw" required minlength="6">
+                    </div>
+                    <input class="profileButton" type="submit" value="Change Password">
+                </form>
+            </div>
+            <div class="element">
+                <button class="profileButton" onclick="signOut()"> Sign Out </button>
+            </div>
+        </div>
+    </script>
+    </head>
+
+    <body>
+        <div id="viewport"></div>
+    </body>
+
+</html>
