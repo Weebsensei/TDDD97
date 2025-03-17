@@ -10,9 +10,9 @@ function httpRequest(method, url, data, success, failure){
     let xml = new XMLHttpRequest();
     xml.onreadystatechange = function() {
         if (xml.readyState === 4){
-            let response = JSON.parse(xml.responseText)
+            let response = JSON.parse(xml.responseText);
             if (xml.status === 200 || xml.status === 201){
-                success(response);           
+                success(response.data);           
             } else {
                 failure(xml.status);
             }
@@ -29,8 +29,22 @@ function httpRequest(method, url, data, success, failure){
 function displayView (){
     if(getToken() != null){
         document.getElementById("viewport").innerHTML = document.getElementById("profile_view").innerHTML;
-        // let response = serverstub.getUserDataByToken(getToken());
-        // getAccountInfo(response.data, "home_");
+        httpRequest('GET', '/get_user_data_by_token', {},
+            function(data) {
+                getAccountInfo(data, "home_");
+            },
+            function(status){
+                if (status === 401){
+                    alert("ACCINFO ERROR 401")
+                }
+                else if (status === 405) {
+                    alert("ACCINFO ERROR 405")
+                }
+                else if (status === 500) {
+                    alert("ACCINFO ERROR 500")
+                }
+            }
+        );
     } else {
         document.getElementById("viewport").innerHTML = document.getElementById("welcome_view").innerHTML;        
     }
@@ -52,23 +66,26 @@ function loginValidate(email, password) {
                  'password': password};
 
     httpRequest('POST', '/sign_in', object, 
-        function(response){
-            let token = response.data;
+        function(data){
+            let token = data;
             localStorage.setItem("token", token);
             displayView();
         },
         function(status){
             if (status === 400) {
-                alert('SIGN IN 400');
+                document.getElementById('LoginErrorMessage').innerHTML = "Error 400";
             } 
             else if (status ===  401) {
-                alert('SIGN IN 401');
+                document.getElementById('LoginErrorMessage').innerHTML = "Error 401";
             } 
+            else if (status === 404) {
+                document.getElementById('LoginErrorMessage').innerHTML = "Error 404";
+            }
             else if (status  === 405) {
-                alert('SIGN IN 405');
+                document.getElementById('LoginErrorMessage').innerHTML = "Error 405";
             } 
             else if (status  === 500) {
-                alert('SIGN IN 500');
+                document.getElementById('LoginErrorMessage').innerHTML = "Error 500";
             }
 
         }
@@ -102,29 +119,28 @@ function signup(form) {
                 'country': form.country.value
             };
             httpRequest('POST', '/sign_up', dataObject,
-                function (response){
-                    document.getElementById("errorMessage").innerHTML = response.message;
-                    // loginValidate(email, passwd);
+                function (){
+                    loginValidate(email, passwd);
                 },
                 function(status){
                     if(status === 400){
-                        alert("SIGN UP 400")
+                        document.getElementById('SignupErrorMessage').innerHTML = "Error 400";
                     }
                     else if(status === 409) {
-                        alert("SIGN UP 409")
+                        document.getElementById('SignupErrorMessage').innerHTML = "Error 409";
                     }
                     else if(status === 405) {
-                        alert("SIGN UP 405")
+                        document.getElementById('SignupErrorMessage').innerHTML = "Error 405";
                     }
                     else if(status === 500) {
-                        alert("SIGN UP 500")
+                        document.getElementById('SignupErrorMessage').innerHTML = "Error 500";
                     }
                 }
             );
 
         }
         catch(e){
-            document.getElementById('feedback').innerHTML = "Something went wrong! UWU";
+            document.getElementById('SignupErrorMessage').innerHTML = "Something went wrong! UWU";
         }
         finally{
             form.email.value = "";
@@ -175,6 +191,7 @@ function signOut() {
     httpRequest('DELETE', '/sign_out', token,
         function () {
             localStorage.removeItem("token");
+            displayView();
         },
         function (status) {
             if(status === 400){
@@ -191,16 +208,15 @@ function signOut() {
             }
         }
     );
-    displayView();
 }
 
 function getAccountInfo(data, page) {
-    document.getElementById(page + "fNameInfo").innerHTML = data.firstname;
-    document.getElementById(page + "lNameInfo").innerHTML = data.familyname;
-    document.getElementById(page + "genderInfo").innerHTML = data.gender;
-    document.getElementById(page + "cityInfo").innerHTML = data.city;
-    document.getElementById(page + "countryInfo").innerHTML = data.country;
-    document.getElementById(page + "emailInfo").innerHTML = data.email;
+    document.getElementById(page + "emailInfo").innerHTML = data[0];
+    document.getElementById(page + "fNameInfo").innerHTML = data[2];
+    document.getElementById(page + "lNameInfo").innerHTML = data[3];
+    document.getElementById(page + "genderInfo").innerHTML = data[4];
+    document.getElementById(page + "cityInfo").innerHTML = data[5];
+    document.getElementById(page + "countryInfo").innerHTML = data[6];
 }
 
 function messagePost(form) {
@@ -254,9 +270,21 @@ function loadBrowseMessages() {
 
 function lookupEmail(form) {
     let target = form.searchEmail.value;
-    let response = serverstub.getUserDataByEmail(getToken(), target);
-    if(response.success){
-        getAccountInfo(response.data, "browse_");
-        document.getElementById("searchEmailform").reset();
-    }
+    httpRequest('GET', `/get_user_data_by_email/${target}`, {},
+            function(data) {
+                getAccountInfo(data, "browse_");
+                document.getElementById("searchEmailform").reset();
+            },
+            function(status){
+                if (status === 401){
+                    alert("ACCINFO ERROR 401")
+                }
+                else if (status === 405) {
+                    alert("ACCINFO ERROR 405")
+                }
+                else if (status === 500) {
+                    alert("ACCINFO ERROR 500")
+                }
+            }
+        );
 }

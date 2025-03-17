@@ -31,27 +31,27 @@ def index():
 def sign_up():
     data = request.get_json()
     if data is None:
-        return json.dumps({'message': 'No inputs'}), 400
+        return jsonify({'message': 'No inputs'}), 400
 
     if not('email' in data or 'password' in data or 
           'firstname' in data or 'familyname' in data or 
           'gender' in data or 'city' in data or 
           'country' in data or len(data['password'])>=6):
-        return json.dumps({'message': 'Missing input'}), 400
+        return jsonify({'message': 'Missing input'}), 400
     if (exists(data['email'])):
-        return json.dumps({'message': 'User already exists'}), 409
+        return jsonify({'message': 'User already exists'}), 409
 
     elif not emailValid(data['email']):
-        return json.dumps({'message': 'Email is not valid'}), 400
+        return jsonify({'message': 'Email is not valid'}), 400
     
     try:
         dh.create_user(data['email'], data['password'], 
                        data['firstname'], data['familyname'], 
                        data['gender'], data['city'], data['country'])
         
-        return json.dumps({'message': 'new user added successfully'}), 201
+        return jsonify({'message': 'new user added successfully'}), 201
     except:
-        return json.dumps({'message': 'Something went wrong?'}), 500
+        return jsonify({'message': 'Something went wrong?'}), 500
 
 @app.route('/sign_in', methods=['POST'])
 def sign_in():
@@ -61,18 +61,18 @@ def sign_in():
     elif not ('email' in data or 'password' in data):
         return jsonify({'message': 'Missing inputs'}), 400
     elif not (exists(data['email'])):
-        return jsonify({'message': 'Wrong email or password'}), 404
+        return jsonify({'message': 'User does not exist'}), 404
     elif not emailValid(data['email']):
-        return jsonify({'message': 'Email is not valid'}), 401
+        return jsonify({'message': 'Email is not valid'}), 400
     elif not dh.check_password(data['email'], data['password']):
-        return jsonify({'message': 'Wrong email or password'}), 404 
+        return jsonify({'message': 'Wrong email or password'}), 401 
     
     token = make_token()
     
     if dh.sign_in(token, data['email']):
-        return json.dumps({'success': True, 'message': 'Successfully signed in', 'data': token}), 200
+        return jsonify({'message': 'Successfully signed in', 'data': token}), 200
     else:
-        return json.dumps({'success': False, 'message': 'Something went wrong? UWU'}), 500
+        return jsonify({'message': 'Something went wrong? UWU'}), 500
 
 
 @app.route('/sign_out', methods=['DELETE'])
@@ -81,7 +81,7 @@ def sign_out():
     if token is None:
         return jsonify({'message': 'No Token in request'}), 400
     if not dh.check_signedin(token):
-        return jsonify({'message': 'User not loggedin'}), 401
+        return jsonify({'message': 'User not logged in'}), 401
     try:
         dh.sign_off(token)
         return jsonify({'message': 'Successfully signed out'}), 200
@@ -94,17 +94,17 @@ def sign_out():
 def get_user_data_by_token():
     token = request.headers.get('Authorization')
     if token is None:
-        return json.dumps({'success': False, 'message': 'Missing token'})
+        return jsonify({'message': 'Missing token'}), 400
     
     email = dh.get_email_by_token(token)
     if email == None:
-        return json.dumps({'success': False, 'message': 'Missing email for token'})
+        return jsonify({'message': 'Missing email for token'}), 400
     
     user = dh.get_user_by_email(email[0])
     if (user != None):
-        return json.dumps({'success': True, 'message': 'User data has been found', 'data': user})
+        return jsonify({'message': 'User data has been found', 'data': user}), 200
     else:
-        return json.dumps({'success': False, 'message': 'User data has not been found'})
+        return jsonify({'message': 'User data has not been found'}), 500
 
 @app.route('/get_user_data_by_email/<email>', methods=['GET'])
 def get_user_data_by_email(email):
@@ -118,7 +118,6 @@ def get_user_data_by_email(email):
     if signed_in == False:
         return json.dumps({'success': False, 'message': 'Not logged in'})
     user = dh.get_user_by_email(email)
-    print(user)
     if (user != None):
         return json.dumps({'success': True, 'message': 'User data has been found', 'data': user})
     else:
