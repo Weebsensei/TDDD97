@@ -14,7 +14,7 @@ function httpRequest(method, url, data, success, failure){
             if (xml.status === 200 || xml.status === 201){
                 success(response.data);           
             } else {
-                failure(xml.status);
+                failure(xml.status, response.message);
             }
         }
     }
@@ -33,15 +33,15 @@ function displayView (){
             function(data) {
                 getAccountInfo(data, "home_");
             },
-            function(status){
+            function(status, message){
                 if (status === 401){
-                    alert("ACCINFO ERROR 401")
+                    alert(message + " " + status)
                 }
                 else if (status === 405) {
-                    alert("ACCINFO ERROR 405")
+                    alert(message + " " + status)
                 }
                 else if (status === 500) {
-                    alert("ACCINFO ERROR 500")
+                    alert(message + " " + status)
                 }
             }
         );
@@ -72,32 +72,33 @@ function loginValidate(email, password) {
             displayView();
         },
         function(status){
-            if (status === 400) {
-                document.getElementById('LoginErrorMessage').innerHTML = "Error 400";
-            } 
-            else if (status ===  401) {
-                document.getElementById('LoginErrorMessage').innerHTML = "Error 401";
-            } 
-            else if (status === 404) {
-                document.getElementById('LoginErrorMessage').innerHTML = "Error 404";
-            }
-            else if (status  === 405) {
-                document.getElementById('LoginErrorMessage').innerHTML = "Error 405";
-            } 
-            else if (status  === 500) {
-                document.getElementById('LoginErrorMessage').innerHTML = "Error 500";
-            }
-
+            document.getElementById('LoginErrorMessage').innerHTML = `${message} Error ${status}`;
+            // if (status === 400) {
+            //     document.getElementById('LoginErrorMessage').innerHTML = "Error 400";
+            // } 
+            // else if (status ===  401) {
+            //     document.getElementById('LoginErrorMessage').innerHTML = "Error 401";
+            // } 
+            // else if (status === 404) {
+            //     document.getElementById('LoginErrorMessage').innerHTML = "Error 404";
+            // }
+            // else if (status  === 405) {
+            //     document.getElementById('LoginErrorMessage').innerHTML = "Error 405";
+            // } 
+            // else if (status  === 500) {
+            //     document.getElementById('LoginErrorMessage').innerHTML = "Error 500";
+            // }
         }
     );
     displayView();
 }
 
-function passwdValidation(passwd, repasswd) {
+function passwdValidation(passwd, repasswd, error) {
     if (passwd !== repasswd) {
-        document.getElementById("errorMessage").innerHTML = "Passwords doesn't match";
+        document.getElementById(error).innerHTML = "Passwords doesn't match";
         return false;
     }
+    document.getElementById(error).innerHTML = "";
     return true;
 }
     
@@ -106,7 +107,7 @@ function signup(form) {
     let passwd = form.passwd.value;
     let repasswd = form.repasswd.value;
 
-    if(passwdValidation(passwd, repasswd)){
+    if(passwdValidation(passwd, repasswd, "SignupErrorMessage")){
         try{
             // Create a data object for server call
             let dataObject = {
@@ -123,18 +124,19 @@ function signup(form) {
                     loginValidate(email, passwd);
                 },
                 function(status){
-                    if(status === 400){
-                        document.getElementById('SignupErrorMessage').innerHTML = "Error 400";
-                    }
-                    else if(status === 409) {
-                        document.getElementById('SignupErrorMessage').innerHTML = "Error 409";
-                    }
-                    else if(status === 405) {
-                        document.getElementById('SignupErrorMessage').innerHTML = "Error 405";
-                    }
-                    else if(status === 500) {
-                        document.getElementById('SignupErrorMessage').innerHTML = "Error 500";
-                    }
+                    document.getElementById('SignupErrorMessage').innerHTML = `${message} Error ${status}`;
+                    // if(status === 400){
+                    //     document.getElementById('SignupErrorMessage').innerHTML = "Error 400";
+                    // }
+                    // else if(status === 409) {
+                    //     document.getElementById('SignupErrorMessage').innerHTML = "Error 409";
+                    // }
+                    // else if(status === 405) {
+                    //     document.getElementById('SignupErrorMessage').innerHTML = "Error 405";
+                    // }
+                    // else if(status === 500) {
+                    //     document.getElementById('SignupErrorMessage').innerHTML = "Error 500";
+                    // }
                 }
             );
 
@@ -176,14 +178,33 @@ function changePassword(form) {
     let passwd = form.newPw.value; // New Password
     let repasswd = form.rePw.value; // Repeat New Password
 
-    if(passwdValidation(passwd, repasswd)) {
-        let response = serverstub.changePassword(getToken(), oldpwd, passwd);
-        if(response.success){
-            form.reset();
-        }
-        document.getElementById("errorMessage").innerHTML = response.message;
+    // Missmatched password acts weird, but nothing changes as intended
+    if(passwdValidation(passwd, repasswd, "PassErrorMessage")) {
+        let dataObject = {
+            'oldpassword': oldpwd,
+            'newpassword': passwd,
+        };
+        httpRequest('PUT', '/change_password', dataObject,
+            function(){
+                form.reset();
+            },
+            function(status, message){
+                document.getElementById("PassErrorMessage").innerHTML = `${message} Error ${status}`;
+                // if (status === 400) {
+                //     alert(message + " " + status)
+                // }   
+                // else if (status === 401) {
+                //     alert(message + " " + status)
+                // }
+                // else if (status === 405) {
+                //     alert(message + " " + status)
+                // }
+                // else if (status === 500) {
+                //     alert(message + " " + status)
+                // }
+            }
+        );
     }
-    
 } 
 
 function signOut() {
@@ -193,18 +214,18 @@ function signOut() {
             localStorage.removeItem("token");
             displayView();
         },
-        function (status) {
+        function (status, message) {
             if(status === 400){
-                alert("SIGN OUT 400")
+                alert(message + " " + status)
             }
             else if(status === 401) {
-                alert("SIGN OUT 401")
+                alert(message + " " + status)
             }
             else if(status === 405) {
-                alert("SIGN OUT 405")
+                alert(message + " " + status)
             }
             else if(status === 500) {
-                alert("SIGN OUT 500")
+                alert(message + " " + status)
             }
         }
     );
@@ -220,52 +241,67 @@ function getAccountInfo(data, page) {
 }
 
 function messagePost(form) {
-    let reciever = form.toEmail.value;
-    let message = form.postTextarea.value;
-    let response = serverstub.postMessage(getToken(), message, reciever);
-    
-    if(response.success) {
-        document.getElementById("postForm").reset();
-    } else {
-        document.getElementById("errorMessage").innerHTML = response.message;
+    let dataObject = {
+        'email': form.toEmail.value,
+        'message': form.postTextarea.value
     }
+    httpRequest('POST', '/post_message', dataObject, 
+        function(){
+            document.getElementById("postForm").reset();
+        },
+        function(status, message){
+            document.getElementById("PostErrorMessage").innerHTML = `${message} Error ${status}`;
+        }
+    )
+
 }
 
 function browseMessagePost(form) {
-    let reciever = form.browsetoEmail.value;
-    let message = form.browsepostTextarea.value;
-    let response = serverstub.postMessage(getToken(), message, reciever);
-    
-    if(response.success) {
-        document.getElementById("browsePostForm").reset();
-    } else {
-        document.getElementById("errorMessage").innerHTML = response.message;
+    let dataObject = {
+        'email': form.browsetoEmail.value,
+        'message': form.browsepostTextarea.value
     }
+    httpRequest('POST', '/post_message', dataObject, 
+        function(){
+            document.getElementById("browsePostForm").reset();
+        },
+        function(status, message){
+            document.getElementById("PostErrorMessage").innerHTML = `${message} Error ${status}`;
+        }
+    )
 }
 
 function loadMessages() {
-    let response = serverstub.getUserMessagesByToken(getToken());
-
-    if(response.success) {
-        let messages = "";
-        response.data.forEach((msg) => messages += `<dt>${msg.writer}</dt><dd>${msg.content}</dd>`);
-        document.getElementById("messages").innerHTML = messages;
-    } else {
-        document.getElementById("errorMessage").innerHTML = response.message;
-    }
+    httpRequest('GET', '/get_user_messages_by_token', {},
+        function(data) {
+            let messages = "";
+            alert(data.length);
+            for (let i = data.length-1; 0 <= i; i--) {
+                messages += `<dt>${data[i][1]}</dt><dd>${data[i][0]}</dd>`;
+            }
+            document.getElementById("messages").innerHTML = messages;
+        },
+        function(status, message){
+            document.getElementById("WallErrorMessage").innerHTML = `${message} Error ${status}`;
+        }
+    )
 }
 
 function loadBrowseMessages() {
     let target = document.getElementById("browse_emailInfo").innerHTML;
-    let response = serverstub.getUserMessagesByEmail(getToken(), target);
-    
-    if(response.success) {
-        let messages = "";
-        response.data.forEach((msg) => messages += `<dt>${msg.writer}</dt><dd>${msg.content}</dd>`);
-        document.getElementById("browse_messages").innerHTML = messages;
-    } else {
-        document.getElementById("errorMessage").innerHTML = response.message;
-    }
+
+    httpRequest('GET', `/get_user_messages_by_email/${target}`, {},
+        function(data) {
+            let messages = "";
+            for (let i = 0; i < data.length; i++) {
+                messages += `<dt>${data[i][1]}</dt><dd>${data[i][0]}</dd>`;
+            }
+            document.getElementById("browse_messages").innerHTML = messages;
+        },
+        function(status, message){
+            document.getElementById("WallErrorMessage").innerHTML = `${message} Error ${status}`;
+        }
+    )
 }
 
 function lookupEmail(form) {
@@ -275,15 +311,15 @@ function lookupEmail(form) {
                 getAccountInfo(data, "browse_");
                 document.getElementById("searchEmailform").reset();
             },
-            function(status){
+            function(status, message){
                 if (status === 401){
-                    alert("ACCINFO ERROR 401")
+                    alert(message + " " + status)
                 }
                 else if (status === 405) {
-                    alert("ACCINFO ERROR 405")
+                    alert(message + " " + status)
                 }
                 else if (status === 500) {
-                    alert("ACCINFO ERROR 500")
+                    alert(message + " " + status)
                 }
             }
         );

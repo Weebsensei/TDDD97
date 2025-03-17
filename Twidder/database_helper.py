@@ -41,7 +41,7 @@ def get_email_by_token(token):
         cursor = get_db().execute('SELECT email FROM signed_in WHERE token = ?;', [token])
         user = cursor.fetchone()
 
-        return user      
+        return user[0]     
     except:
         return None
 

@@ -74,7 +74,6 @@ def sign_in():
     else:
         return jsonify({'message': 'Something went wrong? UWU'}), 500
 
-
 @app.route('/sign_out', methods=['DELETE'])
 def sign_out():
     token = request.headers.get('Authorization')
@@ -88,8 +87,6 @@ def sign_out():
     except:
         return jsonify({'message': 'Failed to log out, try again'}), 500
 
-
-
 @app.route('/get_user_data_by_token', methods=['GET'])
 def get_user_data_by_token():
     token = request.headers.get('Authorization')
@@ -100,7 +97,7 @@ def get_user_data_by_token():
     if email == None:
         return jsonify({'message': 'Missing email for token'}), 400
     
-    user = dh.get_user_by_email(email[0])
+    user = dh.get_user_by_email(email)
     if (user != None):
         return jsonify({'message': 'User data has been found', 'data': user}), 200
     else:
@@ -110,18 +107,18 @@ def get_user_data_by_token():
 def get_user_data_by_email(email):
     token = request.headers.get('Authorization')
     if token is None:
-        return json.dumps({'success': False, 'message': 'Missing token'})
+        return jsonify({'message': 'Missing token'}), 400
     elif (email == None or not emailValid(email)):
-        return json.dumps({'success': False, 'message': 'Incorrect email'})
+        return jsonify({'message': 'Incorrect email'}), 400
     
     signed_in = dh.check_signedin(token)
     if signed_in == False:
-        return json.dumps({'success': False, 'message': 'Not logged in'})
+        return jsonify({'message': 'Not logged in'}), 401
     user = dh.get_user_by_email(email)
     if (user != None):
-        return json.dumps({'success': True, 'message': 'User data has been found', 'data': user})
+        return jsonify({'message': 'User data has been found', 'data': user}), 200
     else:
-        return json.dumps({'success': False, 'message': 'User data has not been found'})
+        return jsonify({'message': 'User data has not been found'}), 500
 
 
 @app.route('/post_message', methods=['POST'])
@@ -129,62 +126,62 @@ def post_mesage():
     data = request.get_json()
     token = request.headers.get('Authorization')
     if data is None:
-        return json.dumps({'success': False, 'message': 'No inputs'})
+        return jsonify({'message': 'No inputs'}), 401
     elif token is None:
-        return json.dumps({'success': False, 'message': 'Missing token'})
+        return jsonify({'message': 'Missing token'}), 401
     elif not dh.get_email_by_token(token):
-        return json.dumps({'success': False, 'message': 'no matching email to token'})
+        return jsonify({'message': 'no matching email to token'}), 400
     elif not ('email' in data):
-        return json.dumps({'success': False, 'message': 'Missing reciever'})
+        return jsonify({'message': 'Missing reciever'}), 401
     elif data['message'] == None:
-        return json.dumps({'success': False, 'message': 'Missing message'})
+        return jsonify({'message': 'Missing message'}), 401
     elif dh.get_user_by_email(data['email']) == None:
-        return json.dumps({'success': False, 'message': 'User does not exist'})
+        return jsonify({'message': 'User does not exist'}), 404
     
     sender = dh.get_email_by_token(token)
     try:
         dh.post_message(sender, data['email'], data['message'])
-        return json.dumps({'success': True, 'message': 'Message has been posted'})
+        return jsonify({'message': 'Message has been posted'}), 201
     except:
-        return json.dumps({'success': False, 'message': 'Message has not been posted'})
+        return jsonify({'message': 'Message has not been posted'}), 500
     
 @app.route('/get_user_messages_by_token', methods=['GET'])
 def get_user_messages_by_token():
     token = request.headers.get('Authorization')
     if token is None:
-        return json.dumps({'success': False, 'message': 'Missing token'})
+        return jsonify({'message': 'Missing token'}), 401
     
     email = dh.get_email_by_token(token)
-    if (email is None or not emailValid(email[0])):
-        return json.dumps({'success': False, 'message': 'Incorrect email'})
+    if (email is None or not emailValid(email)):
+        return jsonify({'message': 'Incorrect email'}), 401
     
     try:
-        dh.get_messages(email[0])
-        return json.dumps({'success': True, 'message': 'Messages has been collected'})
+        messages = dh.get_messages(email)
+        return jsonify({'message': 'Messages has been collected', 'data': messages}), 200
     except:
-        return json.dumps({'success': False, 'message': 'There is no messages'})
+        return jsonify({'message': 'Something went wrong'}), 500
 
 @app.route('/get_user_messages_by_email/<email>', methods=['GET'])
 def get_user_messages_by_email(email):
     token = request.headers.get('Authorization')
     if token is None:
-        return json.dumps({'success': False, 'message': 'Missing token'})
+        return jsonify({'message': 'Missing token'}), 401
     
     signed_in = dh.check_signedin(token)
     if signed_in == False:
-        return json.dumps({'success': False, 'message': 'Not logged in'})
+        return jsonify({'message': 'Not logged in'}), 401
     
     if dh.get_user_by_email(email) is None:
-        return json.dumps({'success': False, 'message': 'User data has not been found'})
+        return jsonify({'message': 'User not found'}), 404
 
     if (email is None or not emailValid(email)):
-        return json.dumps({'success': False, 'message': 'Incorrect email'})
+        return jsonify({'message': 'Incorrect email'}), 401
 
     try:
-        dh.get_messages(email)
-        return json.dumps({'success': True, 'message': 'Messages has been collected'})
+        messages = dh.get_messages(email)
+        return jsonify({'message': 'Messages has been collected', 'data': messages}), 200
     except:
-        return json.dumps({'success': False, 'message': 'There is no messages'})
+        return jsonify({'message': 'There is no messages'}), 500
 
 def exists(email):
     user = dh.get_user_by_email(email)
@@ -199,26 +196,26 @@ def change_password():
     data = request.get_json()
     auth = request.headers.get('Authorization')
     if data is None:
-        return json.dumps({'success': False, 'message': 'No inputs'})
+        return jsonify({'message': 'No inputs'}), 400
     elif auth is None:
-        return json.dumps({'success': False, 'message': 'Not logged in'})
+        return jsonify({'message': 'Not logged in'}), 401
     
     email = dh.get_email_by_token(auth)
 
     if email is None:
-        return json.dumps({'success': False, 'message': 'Not logged in'})
+        return jsonify({'message': 'Not logged in'}), 401
     elif not ('oldpassword' in data or 'newpassword' in data):
-        return json.dumps({'success': False, 'message': 'Missing inputs'})
+        return jsonify({'message': 'Missing inputs'}), 400
     elif not isinstance(data['newpassword'], str) or len(data['newpassword']) < 6:
-        return json.dumps({'success': False, 'message': 'Password too short'})
-    elif not dh.check_password(email[0], data['oldpassword']):
-        return json.dumps({'success': False, 'message': 'Wrong password'})
+        return jsonify({'message': 'Password too short'}), 400
+    elif not dh.check_password(email, data['oldpassword']):
+        return jsonify({'message': 'Wrong password'}), 401
     
     try:
         dh.change_password(email, data['newpassword'])
-        return json.dumps({'success': True, 'message': 'Password changed'})
+        return jsonify({'message': 'Password changed'}), 200
     except:
-        return json.dumps({'success': False, 'message': 'Something went wrong'})
+        return jsonify({'message': 'Something went wrong'}), 500
     
 if __name__ == '__main__':
     dh.init_db()

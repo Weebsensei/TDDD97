@@ -39,3 +39,9 @@ VALUES ('erik_hugo@liu.se',
         'Other',
         'Malmö',
         'Sweden');
+
+INSERT INTO messages(message, user_email, author_email)
+VALUES ('TEST1', 'erik_hugo@liu.se', 'erik_hugo@liu.se');
+
+INSERT INTO messages(message, user_email, author_email)
+VALUES ('TEST2', 'erik_hugo@liu.se', 'erik_hugo@liu.se');
