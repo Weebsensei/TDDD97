@@ -20,11 +20,9 @@ function httpRequest(method, url, data, success, failure){
     }
     xml.open(method, url, true);
     xml.setRequestHeader('Content-Type', 'application/json');
-    // SUS?
     xml.setRequestHeader('Authorization', getToken());
     xml.send(JSON.stringify(data));
 }
-
 
 function displayView (){
     if(getToken() != null){
@@ -34,15 +32,7 @@ function displayView (){
                 getAccountInfo(data, "home_");
             },
             function(status, message){
-                if (status === 401){
-                    alert(message + " " + status)
-                }
-                else if (status === 405) {
-                    alert(message + " " + status)
-                }
-                else if (status === 500) {
-                    alert(message + " " + status)
-                }
+                document.getElementById('homeInfoErrorMessage').innerHTML = `${message} Error ${status}`;
             }
         );
     } else {
@@ -73,21 +63,6 @@ function loginValidate(email, password) {
         },
         function(status){
             document.getElementById('LoginErrorMessage').innerHTML = `${message} Error ${status}`;
-            // if (status === 400) {
-            //     document.getElementById('LoginErrorMessage').innerHTML = "Error 400";
-            // } 
-            // else if (status ===  401) {
-            //     document.getElementById('LoginErrorMessage').innerHTML = "Error 401";
-            // } 
-            // else if (status === 404) {
-            //     document.getElementById('LoginErrorMessage').innerHTML = "Error 404";
-            // }
-            // else if (status  === 405) {
-            //     document.getElementById('LoginErrorMessage').innerHTML = "Error 405";
-            // } 
-            // else if (status  === 500) {
-            //     document.getElementById('LoginErrorMessage').innerHTML = "Error 500";
-            // }
         }
     );
     displayView();
@@ -125,18 +100,6 @@ function signup(form) {
                 },
                 function(status){
                     document.getElementById('SignupErrorMessage').innerHTML = `${message} Error ${status}`;
-                    // if(status === 400){
-                    //     document.getElementById('SignupErrorMessage').innerHTML = "Error 400";
-                    // }
-                    // else if(status === 409) {
-                    //     document.getElementById('SignupErrorMessage').innerHTML = "Error 409";
-                    // }
-                    // else if(status === 405) {
-                    //     document.getElementById('SignupErrorMessage').innerHTML = "Error 405";
-                    // }
-                    // else if(status === 500) {
-                    //     document.getElementById('SignupErrorMessage').innerHTML = "Error 500";
-                    // }
                 }
             );
 
@@ -190,18 +153,6 @@ function changePassword(form) {
             },
             function(status, message){
                 document.getElementById("PassErrorMessage").innerHTML = `${message} Error ${status}`;
-                // if (status === 400) {
-                //     alert(message + " " + status)
-                // }   
-                // else if (status === 401) {
-                //     alert(message + " " + status)
-                // }
-                // else if (status === 405) {
-                //     alert(message + " " + status)
-                // }
-                // else if (status === 500) {
-                //     alert(message + " " + status)
-                // }
             }
         );
     }
@@ -215,18 +166,7 @@ function signOut() {
             displayView();
         },
         function (status, message) {
-            if(status === 400){
-                alert(message + " " + status)
-            }
-            else if(status === 401) {
-                alert(message + " " + status)
-            }
-            else if(status === 405) {
-                alert(message + " " + status)
-            }
-            else if(status === 500) {
-                alert(message + " " + status)
-            }
+            document.getElementById("signOutErrorMessage").innerHTML = `${message} Error ${status}`;
         }
     );
 }
@@ -266,7 +206,7 @@ function browseMessagePost(form) {
             document.getElementById("browsePostForm").reset();
         },
         function(status, message){
-            document.getElementById("PostErrorMessage").innerHTML = `${message} Error ${status}`;
+            document.getElementById("browsePostErrorMessage").innerHTML = `${message} Error ${status}`;
         }
     )
 }
@@ -275,7 +215,6 @@ function loadMessages() {
     httpRequest('GET', '/get_user_messages_by_token', {},
         function(data) {
             let messages = "";
-            alert(data.length);
             for (let i = data.length-1; 0 <= i; i--) {
                 messages += `<dt>${data[i][1]}</dt><dd>${data[i][0]}</dd>`;
             }
@@ -289,19 +228,24 @@ function loadMessages() {
 
 function loadBrowseMessages() {
     let target = document.getElementById("browse_emailInfo").innerHTML;
-
-    httpRequest('GET', `/get_user_messages_by_email/${target}`, {},
-        function(data) {
-            let messages = "";
-            for (let i = 0; i < data.length; i++) {
-                messages += `<dt>${data[i][1]}</dt><dd>${data[i][0]}</dd>`;
+    if (target !== "") {
+        httpRequest('GET', `/get_user_messages_by_email/${target}`, {},
+            function(data) {
+                let messages = "";
+                for (let i = data.length-1; 0 <= i; i--) {
+                    messages += `<dt>${data[i][1]}</dt><dd>${data[i][0]}</dd>`;
+                }
+                document.getElementById("browse_messages").innerHTML = messages;
+                document.getElementById("browseWallErrorMessage").innerHTML = "";
+            },
+            function(status, message) {
+                document.getElementById("browseWallErrorMessage").innerHTML = `${message} Error ${status}`;
             }
-            document.getElementById("browse_messages").innerHTML = messages;
-        },
-        function(status, message){
-            document.getElementById("WallErrorMessage").innerHTML = `${message} Error ${status}`;
-        }
-    )
+        )
+    }
+    else {
+        document.getElementById("browseWallErrorMessage").innerHTML = "No user to look up!";
+    }
 }
 
 function lookupEmail(form) {
@@ -312,15 +256,7 @@ function lookupEmail(form) {
                 document.getElementById("searchEmailform").reset();
             },
             function(status, message){
-                if (status === 401){
-                    alert(message + " " + status)
-                }
-                else if (status === 405) {
-                    alert(message + " " + status)
-                }
-                else if (status === 500) {
-                    alert(message + " " + status)
-                }
+                document.getElementById("searchErrorMessage").innerHTML = `${message} Error ${status}`;
             }
         );
 }

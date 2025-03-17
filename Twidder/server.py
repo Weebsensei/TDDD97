@@ -1,13 +1,68 @@
 from flask import Flask, request, jsonify, app 
-import hashlib
-import uuid
-import json
+from flask_sock import Sock
 import random
 import string
 import database_helper as dh
 import re
 
 app = Flask(__name__)
+socket = Sock(app)
+
+active_sockets = dict()
+
+def disconnect(user):
+    if not user in active_sockets:
+        return
+    
+    signOutSock = active_sockets[user]
+    signOutSock.send("logout")
+    signOutSock.close()
+
+    
+def disconnect_socket(user):
+    if not user in active_sockets:
+        print("No active websocket for: ")
+        print(user)
+        return
+    
+    logout_sock = active_sockets[user]
+    try:
+        logout_sock.send("logout")
+        logout_sock.close()
+    except Exception as e:
+        print("Exception i disconnect socket:")
+        print(e)
+
+
+@socket.route("/echo")
+def echo_socket(ws):
+    while True:
+        data = ws.receive()
+        print(data)
+        ws.send(data)
+
+
+@socket.route("/connect")
+def connect(ws):
+    user = ''
+    while True:
+        try:
+            token = ws.receive()
+            user = dh.get_email_by_token(token)
+            
+            ## If message is not a vaild token, dont add a new connection
+            if user is None:
+                continue
+
+            active_sockets[user] = ws
+            print("(New connection! All current connections:")
+            print(active_sockets)
+        except Exception as e:
+            print("Exception i connect")
+            print(e)
+            del active_sockets[user]
+            break
+
 
 def emailValid(email):
     if email is None:
@@ -21,7 +76,7 @@ def make_token():
 @app.teardown_appcontext
 def close_connection(exception):
     """closes the database connection after each request"""
-    dh.disconnect_db()
+    dh.disconnect_db(exception)
 
 @app.route("/", methods=['GET'])
 def index():
@@ -106,19 +161,22 @@ def get_user_data_by_token():
 @app.route('/get_user_data_by_email/<email>', methods=['GET'])
 def get_user_data_by_email(email):
     token = request.headers.get('Authorization')
-    if token is None:
-        return jsonify({'message': 'Missing token'}), 400
-    elif (email == None or not emailValid(email)):
+    if token is None or email is None:
+        return jsonify({'message': 'Missing inputs'}), 400
+    elif not(emailValid(email)):
         return jsonify({'message': 'Incorrect email'}), 400
     
     signed_in = dh.check_signedin(token)
     if signed_in == False:
         return jsonify({'message': 'Not logged in'}), 401
-    user = dh.get_user_by_email(email)
-    if (user != None):
-        return jsonify({'message': 'User data has been found', 'data': user}), 200
-    else:
-        return jsonify({'message': 'User data has not been found'}), 500
+    try:
+        user = dh.get_user_by_email(email)
+        if (user != None):
+            return jsonify({'message': 'User data has been found', 'data': user}), 200
+        else:
+            return jsonify({'message': 'User not found!'}), 404
+    except:
+        return jsonify({'message': 'Something went wrong!'}), 500
 
 
 @app.route('/post_message', methods=['POST'])
@@ -131,13 +189,11 @@ def post_mesage():
         return jsonify({'message': 'Missing token'}), 401
     elif not dh.get_email_by_token(token):
         return jsonify({'message': 'no matching email to token'}), 400
-    elif not ('email' in data):
-        return jsonify({'message': 'Missing reciever'}), 401
-    elif data['message'] == None:
-        return jsonify({'message': 'Missing message'}), 401
+    elif not (isinstance(data['email'], str) and isinstance(data['message'], str)):
+        return jsonify({'message': 'Missing inputs'}), 401
     elif dh.get_user_by_email(data['email']) == None:
         return jsonify({'message': 'User does not exist'}), 404
-    
+
     sender = dh.get_email_by_token(token)
     try:
         dh.post_message(sender, data['email'], data['message'])
@@ -204,7 +260,7 @@ def change_password():
 
     if email is None:
         return jsonify({'message': 'Not logged in'}), 401
-    elif not ('oldpassword' in data or 'newpassword' in data):
+    elif not ('oldpassword' in data and 'newpassword' in data):
         return jsonify({'message': 'Missing inputs'}), 400
     elif not isinstance(data['newpassword'], str) or len(data['newpassword']) < 6:
         return jsonify({'message': 'Password too short'}), 400

@@ -113,6 +113,7 @@
                         <td id="home_emailInfo"></td>
                     </tr>
                 </table>
+                <p class="error_message" id="homeInfoErrorMessage"></p>
             </div>
             <div class="element" id="messagePost">
                 <form onsubmit="messagePost(this);return false;" id="postForm">
@@ -122,7 +123,7 @@
                     </div>
                     <label>Message</label>
                     <textarea class="messageInput" id="postTextarea" name="postTextarea" rows="6" form="postForm"></textarea>
-                    <p class="error_mesage" id="PostErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                    <p class="error_message" id="PostErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
                     <button class="welcomeButton" type="submit">Post</button>
                 </form>
             </div>
@@ -130,7 +131,7 @@
                 <h3>Messages</h3>
                 <button class="LwelcomeButton" onclick="loadMessages()">Refresh</button>
                 <div id="messages"></div>
-                <p class="error_mesage" id="WallErrorMessage"></p>
+                <p class="error_message" id="WallErrorMessage"></p>
             </div>
         </div>
         <div id="browse" class="tab-content" style="display: none;">
@@ -141,6 +142,7 @@
                         <label for="searchEmail">Look Up</label>
                         <input type="email" id="searchEmail" name="searchEmail" required>
                     </div>
+                    <p class="error_message" id="searchErrorMessage"></p>
                     <button class="welcomeButton" type="submit">Look up</button>
                 </form>
             </div>
@@ -181,7 +183,7 @@
                     </div>
                     <label>Message</label>
                     <textarea class="messageInput" id="browsepostTextarea" name="browsepostTextarea" rows="6" form="browsePostForm"></textarea>
-                    <p class="error_mesage" id="PostErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                    <p class="error_message" id="browsePostErrorMessage"></p>
                     <button class="welcomeButton" type="submit">Post</button>
                 </form>
             </div>
@@ -189,6 +191,7 @@
                 <h3>Messages</h3>
                 <button class="LwelcomeButton" onclick="loadBrowseMessages()">Refresh</button>
                 <div id="browse_messages"></div>
+                <p class="error_message" id="browseWallErrorMessage"></p>
             </div>
         </div>
     
@@ -210,12 +213,13 @@
                         <label for="rePw">Repeat Password</label>
                         <input type="password" id="rePw" name="rePw" required minlength="6">
                     </div>
-                    <p class="error_mesage" id="PassErrorMessage"></p>
+                    <p class="error_message" id="PassErrorMessage"></p>
                     <input class="profileButton" type="submit" value="Change Password">
                 </form>
             </div>
             <div class="element">
                 <button class="profileButton" onclick="signOut()"> Sign Out </button>
+                <p class="error_message" id="signOutErrorMessage"></p>
             </div>
         </div>
     </script>

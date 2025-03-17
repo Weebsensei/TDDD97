@@ -14,7 +14,7 @@ def init_db():
     conn.commit()
     conn.close()
 
-def disconnect_db():
+def disconnect_db(exception):
     db = getattr(g, 'db', None)
     if db is not None:
         g.db.close()
@@ -79,7 +79,6 @@ def sign_in(token, email):
         return True
     except:
         return False
-
 
 def sign_off(token):
     try:
