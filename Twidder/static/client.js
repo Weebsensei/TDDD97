@@ -317,7 +317,7 @@ function loadMessages() {
         function(data) {
             let messages = "";
             for (let i = data.length-1; 0 <= i; i--) {
-                messages += `<dt>${data[i][1]}</dt><dd>${data[i][0]}</dd>`;
+                messages += `<dt>${data[i][1]}</dt><dd draggable="true" ondragstart="dragstartHandler(event)">${data[i][0]}</dd>`;
             }
             document.getElementById("messages").innerHTML = messages;
         },
@@ -341,7 +341,7 @@ function loadBrowseMessages() {
             function(data) {
                 let messages = "";
                 for (let i = data.length-1; 0 <= i; i--) {
-                    messages += `<dt>${data[i][1]}</dt><dd>${data[i][0]}</dd>`;
+                    messages += `<dt>${data[i][1]}</dt><dd draggable="true" ondragstart="dragstartHandler(event)">${data[i][0]}</dd>`;
                 }
                 document.getElementById("browse_messages").innerHTML = messages;
                 document.getElementById("browseWallErrorMessage").innerHTML = "";
@@ -387,4 +387,18 @@ function lookupEmail(form) {
                 document.getElementById('searchErrorMessage').innerHTML = `${errorMessage} Code: ${status}`;
             }
         );
+}
+
+function dragstartHandler(ev) {
+    ev.dataTransfer.setData("text", ev.target.innerText);
+}
+
+function dragoverHandler(ev) {
+    ev.preventDefault();
+}
+
+function dropHandler(ev) {
+    let data = document.getElementById(ev.target.id);
+    data.value += ev.dataTransfer.getData("text");
+    ev.preventDefault();
 }

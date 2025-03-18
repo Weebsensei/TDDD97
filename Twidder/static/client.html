@@ -121,8 +121,9 @@
                         <input type="email" id="toEmail" name="toEmail" required>
                     </div>
                     <label>Message</label>
-                    <textarea class="messageInput" id="postTextarea" name="postTextarea" rows="6" form="postForm"></textarea>
-                    <p class="error_message" id="PostErrorMessage"></p> <!-- room for error mesage when fail log in. remember to add-->
+                    <textarea class="messageInput" id="postTextarea" name="postTextarea" rows="6" form="postForm" 
+                    ondrop="dropHandler(event)" ondragover="dragoverHandler(event)"></textarea>
+                    <p class="error_message" id="PostErrorMessage"></p>
                     <button class="welcomeButton" type="submit">Post</button>
                 </form>
             </div>
