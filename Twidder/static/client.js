@@ -35,7 +35,6 @@ function wsConnect(){
         console.log(response);
         switch (response.action){
           case "sign_out":
-            console.log("Signing out")
             sessionStorage.clear();
             connection.active = false;
             connection.ws = null;
@@ -80,8 +79,15 @@ function displayView (){
             function(data) {
                 getAccountInfo(data, "home_");
             },
-            function(status, message){
-                document.getElementById('homeInfoErrorMessage').innerHTML = `${message} Error ${status}`;
+            function(status){
+                if(status == 401) {
+                    errorMessage = `User is not logged in!`
+                } else if(status == 405) {
+                    errorMessage = `Method not allowed!`
+                } else if(status == 500) {
+                    errorMessage = `Server error! Try again.`
+                }
+                document.getElementById('homeInfoErrorMessage').innerHTML = `${errorMessage} Code: ${status}`;
             }
         );
     } else {
@@ -96,6 +102,7 @@ function login(form) {
 
     // Login
     loginValidate(email, password);
+    form.reset();
 }
 
 function loginValidate(email, password) {
@@ -112,8 +119,17 @@ function loginValidate(email, password) {
             wsConnect();
             displayView();
         },
-        function(status, message){
-            document.getElementById('LoginErrorMessage').innerHTML = `${message} Error ${status}`;
+        function(status){
+            if(status == 400) {
+                errorMessage = `Input Error!`
+            } else if(status == 401) {
+                errorMessage = `Wrong email or password!`
+            } else if(status == 405) {
+                errorMessage = `Method not allowed!`
+            } else if(status == 500) {
+                errorMessage = `Server error! Try again.`
+            }
+            document.getElementById('LoginErrorMessage').innerHTML = `${errorMessage} Code: ${status}`;;
         }
     );
 }
@@ -133,41 +149,35 @@ function signup(form) {
     let repasswd = form.repasswd.value;
 
     if(passwdValidation(passwd, repasswd, "SignupErrorMessage")){
-        try{
-            // Create a data object for server call
-            let dataObject = {
-                'email': form.email.value,
-                'password': form.passwd.value,
-                'firstname': form.fname.value,
-                'familyname': form.lname.value,
-                'gender': form.gender.value,
-                'city': form.city.value,
-                'country': form.country.value
-            };
-            httpRequest('POST', '/sign_up', dataObject,
-                function (){
-                    loginValidate(email, passwd);
-                },
-                function(status, message){
-                    document.getElementById('SignupErrorMessage').innerHTML = `${message} Error ${status}`;
+        // Create a data object for server call
+        let dataObject = {
+            'email': form.email.value,
+            'password': form.passwd.value,
+            'firstname': form.fname.value,
+            'familyname': form.lname.value,
+            'gender': form.gender.value,
+            'city': form.city.value,
+            'country': form.country.value
+        };
+        httpRequest('POST', '/sign_up', dataObject,
+            function (){
+                loginValidate(email, passwd);
+            },
+            function(status){
+                if(status == 400) {
+                    errorMessage = `Input Error!`
+                } else if(status == 405) {
+                    errorMessage = `Method not allowed!`
+                } else if(status == 409) {
+                    errorMessage = `Email already in use!`
+                } else if(status == 500) {
+                    errorMessage = `Server error! Try again.`
                 }
-            );
-
-        }
-        catch(e){
-            document.getElementById('SignupErrorMessage').innerHTML = "Something went wrong! UWU";
-        }
-        finally{
-            form.email.value = "";
-            form.passwd.value = "";
-            form.repasswd.value = "";
-            form.fname.value = "";
-            form.lname.value = "";
-            form.gender.value = "";
-            form.city.value = "";
-            form.country.value = "";
-        }
+                document.getElementById('SignupErrorMessage').innerHTML = `${errorMessage} Code: ${status}`;;
+            }
+        );
     }
+    form.reset();
 }
 
 function showTab(tabName){
@@ -201,8 +211,17 @@ function changePassword(form) {
             function(){
                 form.reset();
             },
-            function(status, message){
-                document.getElementById("PassErrorMessage").innerHTML = `${message} Error ${status}`;
+            function(status){
+                if(status == 400) {
+                    errorMessage = `Input Error!`
+                } else if(status == 401) {
+                    errorMessage = `User not logged in!`
+                } else if(status == 405) {
+                    errorMessage = `Method not allowed!`
+                } else if(status == 500) {
+                    errorMessage = `Server error! Try again.`
+                }
+                document.getElementById('PassErrorMessage').innerHTML = `${errorMessage} Code: ${status}`;
             }
         );
     }
@@ -215,8 +234,18 @@ function signOut() {
             sessionStorage.clear();
             displayView();
         },
-        function (status, message) {
-            document.getElementById("signOutErrorMessage").innerHTML = `${message} Error ${status}`;
+        function (status) {
+            if(status == 400) {
+                errorMessage = `Input Error! Code:${status}`
+            } else if(status == 401) {
+                errorMessage = `Email is not logged in! Code:${status}`
+            } else if(status == 405) {
+                errorMessage = `Method not allowed! Code:${status}`
+            } else if(status == 500) {
+                errorMessage = `Server error! Try again. Code: ${status}`
+            }
+            document.getElementById('signOutErrorMessage').innerHTML = errorMessage;
+            // `${message} Error: ${status}` :(
         }
     );
 }
@@ -239,8 +268,19 @@ function messagePost(form) {
         function(){
             document.getElementById("postForm").reset();
         },
-        function(status, message){
-            document.getElementById("PostErrorMessage").innerHTML = `${message} Error ${status}`;
+        function(status){
+            if(status == 400) {
+                errorMessage = `Input Error!`
+            } else if(status == 401) {
+                errorMessage = `Email is not logged in!`
+            } else if(status == 404) {
+                errorMessage = `User not found!`
+            } else if(status == 405) {
+                errorMessage = `Method not allowed!`
+            } else if(status == 500) {
+                errorMessage = `Server error! Try again.`
+            }
+            document.getElementById('PostErrorMessage').innerHTML = `${errorMessage} Code: ${status}`;
         }
     )
 
@@ -255,8 +295,19 @@ function browseMessagePost(form) {
         function(){
             document.getElementById("browsePostForm").reset();
         },
-        function(status, message){
-            document.getElementById("browsePostErrorMessage").innerHTML = `${message} Error ${status}`;
+        function(status){
+            if(status == 400) {
+                errorMessage = `Input Error!`
+            } else if(status == 401) {
+                errorMessage = `Not logged in!`
+            } else if(status == 404) {
+                errorMessage = `User not found!`
+            } else if(status == 405) {
+                errorMessage = `Method not allowed!`
+            } else if(status == 500) {
+                errorMessage = `Server error! Try again.`
+            }
+            document.getElementById('browsePostErrorMessage').innerHTML = `${errorMessage} Code: ${status}`;
         }
     )
 }
@@ -270,8 +321,15 @@ function loadMessages() {
             }
             document.getElementById("messages").innerHTML = messages;
         },
-        function(status, message){
-            document.getElementById("WallErrorMessage").innerHTML = `${message} Error ${status}`;
+        function(status){
+            if(status == 401) {
+                errorMessage = `Not logged in!`;
+            } else if(status == 405) {
+                errorMessage = `Method not allowed!`;
+            } else if(status == 500) {
+                errorMessage = `Server error! Try again.`;
+            }
+            document.getElementById('WallErrorMessage').innerHTML = `${errorMessage} Code: ${status}`
         }
     )
 }
@@ -288,8 +346,17 @@ function loadBrowseMessages() {
                 document.getElementById("browse_messages").innerHTML = messages;
                 document.getElementById("browseWallErrorMessage").innerHTML = "";
             },
-            function(status, message) {
-                document.getElementById("browseWallErrorMessage").innerHTML = `${message} Error ${status}`;
+            function(status) {
+                if(status == 401) {
+                    errorMessage = `Not logged in!`;
+                } else if(status == 404) {
+                    errorMessage = `User not found!`;
+                } else if(status == 405) {
+                    errorMessage = `Method not allowed!`;
+                } else if(status == 500) {
+                    errorMessage = `Server error! Try again.`;
+                }
+                document.getElementById('browseWallErrorMessage').innerHTML = `${errorMessage} Code: ${status}`
             }
         )
     }
@@ -305,8 +372,19 @@ function lookupEmail(form) {
                 getAccountInfo(data, "browse_");
                 document.getElementById("searchEmailform").reset();
             },
-            function(status, message){
-                document.getElementById("searchErrorMessage").innerHTML = `${message} Error ${status}`;
+            function(status){
+                if(status == 400) {
+                    errorMessage = `Incorrect input!`
+                } else if(status == 401) {
+                    errorMessage = `Not logged in!`
+                } else if(status == 404) {
+                    errorMessage = `User not found!`
+                } else if(status == 405) {
+                    errorMessage = `Method not allowed!`
+                } else if(status == 500) {
+                    errorMessage = `Server error! Try again.`
+                }
+                document.getElementById('searchErrorMessage').innerHTML = `${errorMessage} Code: ${status}`;
             }
         );
 }
