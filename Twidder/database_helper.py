@@ -40,7 +40,8 @@ def get_email_by_token(token):
     try:
         cursor = get_db().execute('SELECT email FROM signed_in WHERE token = ?;', [token])
         user = cursor.fetchone()
-
+        if user is None:
+            return None
         return user[0]     
     except:
         return None
@@ -83,6 +84,14 @@ def sign_in(token, email):
 def sign_off(token):
     try:
         get_db().execute("DELETE FROM signed_in WHERE token = ?", [token])
+        get_db().commit()
+        return True
+    except:
+        return False
+    
+def sign_out_email(email):
+    try:
+        get_db().execute("DELETE FROM signed_in WHERE email = ?", [email])
         get_db().commit()
         return True
     except:

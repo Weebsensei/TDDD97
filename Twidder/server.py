@@ -1,68 +1,46 @@
 from flask import Flask, request, jsonify, app 
 from flask_sock import Sock
+import json
 import random
 import string
 import database_helper as dh
 import re
 
+
 app = Flask(__name__)
-socket = Sock(app)
+sock = Sock(app)
 
 active_sockets = dict()
 
-def disconnect(user):
-    if not user in active_sockets:
-        return
-    
-    signOutSock = active_sockets[user]
-    signOutSock.send("logout")
-    signOutSock.close()
-
-    
-def disconnect_socket(user):
-    if not user in active_sockets:
-        print("No active websocket for: ")
-        print(user)
-        return
-    
-    logout_sock = active_sockets[user]
-    try:
-        logout_sock.send("logout")
-        logout_sock.close()
-    except Exception as e:
-        print("Exception i disconnect socket:")
-        print(e)
-
-
-@socket.route("/echo")
-def echo_socket(ws):
-    while True:
-        data = ws.receive()
-        print(data)
-        ws.send(data)
-
-
-@socket.route("/connect")
+@sock.route("/connect")
 def connect(ws):
-    user = ''
-    while True:
-        try:
-            token = ws.receive()
-            user = dh.get_email_by_token(token)
-            
-            ## If message is not a vaild token, dont add a new connection
-            if user is None:
+    token = request.args.get('token')
+    email = dh.get_email_by_token(token)
+    if email == None:
+        ws.close()
+        return
+    active_sockets[email] = {
+        'ws': ws,
+        'token': token
+    }
+
+    try:
+        while True:
+            message = ws.receive()
+            if message is None:
+                break
+            try:
+                data = json.loads(message)
+            except json.JSONDecodeError:
+                print("Received invalid JSON")
                 continue
-
-            active_sockets[user] = ws
-            print("(New connection! All current connections:")
-            print(active_sockets)
-        except Exception as e:
-            print("Exception i connect")
-            print(e)
-            del active_sockets[user]
-            break
-
+    except Exception as e:
+        print("Exception error (connect):", e)
+    finally:
+        conn = active_sockets.get(email)
+        if conn is not None and conn.get('token') == token:
+            conn['ws'].close()
+            active_sockets.pop(email, None)
 
 def emailValid(email):
     if email is None:
@@ -123,7 +101,19 @@ def sign_in():
         return jsonify({'message': 'Wrong email or password'}), 401 
     
     token = make_token()
-    
+    dh.sign_out_email(data['email'])
+
+    connection = active_sockets.get(data['email'])
+    if connection is not None:
+        try:
+            message = {}
+            message['action'] = "sign_out"
+            connection['ws'].send(json.dumps(message))
+            connection['ws'].close()
+        except:
+            pass
+        active_sockets.pop(data['email'], None)
+
     if dh.sign_in(token, data['email']):
         return jsonify({'message': 'Successfully signed in', 'data': token}), 200
     else:
@@ -136,11 +126,22 @@ def sign_out():
         return jsonify({'message': 'No Token in request'}), 400
     if not dh.check_signedin(token):
         return jsonify({'message': 'User not logged in'}), 401
-    try:
-        dh.sign_off(token)
-        return jsonify({'message': 'Successfully signed out'}), 200
-    except:
+    
+
+    if not dh.sign_off(token):
         return jsonify({'message': 'Failed to log out, try again'}), 500
+    
+    connection = active_sockets.get(dh.get_email_by_token(token))
+    if connection is not None:
+        try:
+            message = {}
+            message['action'] = "sign_out"
+            connection['ws'].send(json.dumps(message))
+            connection['ws'].close()
+        except:
+            pass
+        active_sockets.pop(dh.get_email_by_token(token), None)
+    return jsonify({'message': 'Successfully signed out'}), 200
 
 @app.route('/get_user_data_by_token', methods=['GET'])
 def get_user_data_by_token():

@@ -1,9 +1,58 @@
+let connection = {
+    active: false,
+    ws: null
+};
+
+function wsConnect(){
+    let token = sessionStorage.getItem("token");
+    let url = `ws://${window.location.host}/connect?token=${token}`
+    if (connection.active == null){
+        return;
+    }
+
+    connection.ws = new WebSocket(url);
+    connection.ws.onopen = function() {
+        console.log("Connected");
+        connection.active = true;
+    };
+
+    connection.ws.onclose = function() {
+        connection.active = false;
+        connection.ws = null;
+        displayView();
+    };
+
+    connection.ws.onerror = function() {
+        console.log("ws error");
+        sessionStorage.clear();
+        connection.active = false;
+        connection.ws = null;
+        displayView();
+    };
+
+    connection.ws.onmessage = function(message) {
+        let response = JSON.parse(message.data);
+        console.log(response);
+        switch (response.action){
+          case "sign_out":
+            console.log("Signing out")
+            sessionStorage.clear();
+            connection.active = false;
+            connection.ws = null;
+            displayView();
+          default:
+            console.log("Unexpected message");
+            break;
+        }
+    }
+}
+
 window.onload = function(){
     displayView();
 };
 
 function getToken() {
-    return localStorage.getItem("token");
+    return sessionStorage.getItem("token");
 }
 
 function httpRequest(method, url, data, success, failure){
@@ -58,14 +107,15 @@ function loginValidate(email, password) {
     httpRequest('POST', '/sign_in', object, 
         function(data){
             let token = data;
-            localStorage.setItem("token", token);
+            sessionStorage.setItem("token", token);
+            sessionStorage.setItem("email", object['email']);
+            wsConnect();
             displayView();
         },
-        function(status){
+        function(status, message){
             document.getElementById('LoginErrorMessage').innerHTML = `${message} Error ${status}`;
         }
     );
-    displayView();
 }
 
 function passwdValidation(passwd, repasswd, error) {
@@ -98,7 +148,7 @@ function signup(form) {
                 function (){
                     loginValidate(email, passwd);
                 },
-                function(status){
+                function(status, message){
                     document.getElementById('SignupErrorMessage').innerHTML = `${message} Error ${status}`;
                 }
             );
@@ -162,7 +212,7 @@ function signOut() {
     token = getToken();
     httpRequest('DELETE', '/sign_out', token,
         function () {
-            localStorage.removeItem("token");
+            sessionStorage.clear();
             displayView();
         },
         function (status, message) {
