@@ -162,6 +162,11 @@ body {
     overflow-y: scroll;
 }
 
+#browse_messages {
+    height: 200px;
+    overflow-y: scroll;
+}
+
 #browse {
     width: 600px;
     padding-top: 50px;
@@ -171,5 +176,5 @@ body {
 #emailSearch {
     float: left;
     width: 600px;
-    height: 150px;
+    height: 100px;
 }

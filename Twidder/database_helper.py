@@ -24,7 +24,7 @@ def get_db():
     db = getattr(g, 'db', None)
     if db is None:
         db = g.db = sqlite3.connect(DATABASE_URI)
-    
+
     return db
 
 def get_user_by_email(email):
@@ -32,7 +32,7 @@ def get_user_by_email(email):
         cursor = get_db().execute('SELECT * FROM users WHERE email = ?;', [email])
         user = cursor.fetchone()
 
-        return user      
+        return user
     except:
         return None
 
@@ -42,7 +42,7 @@ def get_email_by_token(token):
         user = cursor.fetchone()
         if user is None:
             return None
-        return user[0]     
+        return user[0]
     except:
         return None
 
@@ -58,15 +58,15 @@ def get_token_by_email(email):
         cursor = get_db().execute('SELECT token FROM signed_in WHERE email = ?;', [email])
         user = cursor.fetchone()
 
-        return user[0]      
+        return user[0]
     except:
         return None
-        
-def create_user(email, password, first_name, family_name, 
+
+def create_user(email, password, first_name, family_name,
                 gender, city, country):
     try:
-        get_db().execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?);", 
-                         [email, password, first_name, family_name, 
+        get_db().execute("INSERT INTO users VALUES (?, ?, ?, ?, ?, ?, ?);",
+                         [email, password, first_name, family_name,
                           gender, city, country])
         get_db().commit()
         return True
@@ -88,7 +88,7 @@ def sign_off(token):
         return True
     except:
         return False
-    
+
 def sign_out_email(email):
     try:
         get_db().execute("DELETE FROM signed_in WHERE email = ?", [email])
@@ -109,11 +109,11 @@ def change_password(email, password):
     try:
         cursor = get_db().execute("UPDATE users SET password = ? WHERE email = ?", [password, email])
         get_db().commit()
-        cursor.close()  
+        cursor.close()
         return check_password(email, password)
     except:
         return False
-    
+
 def check_signedin(token):
     cursor = get_db().execute("SELECT email FROM signed_in WHERE token = ?", [token])
     email = cursor.fetchone()
@@ -128,7 +128,7 @@ def post_message(sender_email, reciever_email, message):
         return True
     except:
         return False
-    
+
 def get_messages(email):
     cursor = get_db().execute("SELECT message, author_email FROM messages WHERE user_email = ?", [email])
     messages = cursor.fetchall()

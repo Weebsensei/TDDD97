@@ -1,4 +1,4 @@
-from flask import Flask, request, jsonify, app 
+from flask import Flask, request, jsonify, app
 from flask_sock import Sock
 import json
 import random
@@ -65,13 +65,13 @@ def sign_up():
     data = request.get_json()
     if data is None:
         return jsonify({'message': 'No inputs'}), 400
-    
+
     if(request.method != 'POST'):
         return jsonify({'message': 'Method not allowed'}), 405
 
-    if not('email' in data or 'password' in data or 
-          'firstname' in data or 'familyname' in data or 
-          'gender' in data or 'city' in data or 
+    if not('email' in data or 'password' in data or
+          'firstname' in data or 'familyname' in data or
+          'gender' in data or 'city' in data or
           'country' in data or len(data['password'])>=6):
         return jsonify({'message': 'Missing input'}), 400
     if (exists(data['email'])):
@@ -79,12 +79,12 @@ def sign_up():
 
     elif not emailValid(data['email']):
         return jsonify({'message': 'Email is not valid'}), 400
-    
+
     try:
-        dh.create_user(data['email'], data['password'], 
-                       data['firstname'], data['familyname'], 
+        dh.create_user(data['email'], data['password'],
+                       data['firstname'], data['familyname'],
                        data['gender'], data['city'], data['country'])
-        
+
         return jsonify({'message': 'new user added successfully'}), 201
     except:
         return jsonify({'message': 'Something went wrong?'}), 500
@@ -96,18 +96,18 @@ def sign_in():
         return jsonify({'message': 'No input'}), 400
     elif not ('email' in data or 'password' in data):
         return jsonify({'message': 'Missing inputs'}), 400
-    
+
     if(request.method != 'POST'):
         return jsonify({'message': 'Method not allowed'}), 405
-    
+
     if not (exists(data['email'])):
         return jsonify({'message': 'User does not exist'}), 401
     elif not emailValid(data['email']):
         return jsonify({'message': 'Email is not valid'}), 400
-    
+
     if not dh.check_password(data['email'], data['password']):
-        return jsonify({'message': 'Wrong email or password'}), 401 
-    
+        return jsonify({'message': 'Wrong email or password'}), 401
+
     token = make_token()
     dh.sign_out_email(data['email'])
 
@@ -134,13 +134,13 @@ def sign_out():
         return jsonify({'message': 'No Token in request'}), 400
     if not dh.check_signedin(token):
         return jsonify({'message': 'User not logged in'}), 401
-    
+
     if(request.method != 'DELETE'):
         return jsonify({'message': 'Method not allowed'}), 405
 
     if not dh.sign_off(token):
         return jsonify({'message': 'Failed to log out, try again'}), 500
-    
+
     connection = active_sockets.get(dh.get_email_by_token(token))
     if connection is not None:
         try:
@@ -158,14 +158,14 @@ def get_user_data_by_token():
     token = request.headers.get('Authorization')
     if token is None:
         return jsonify({'message': 'Missing token'}), 401
-    
+
     if(request.method != 'GET'):
         return jsonify({'message': 'Method not allowed'}), 405
-    
+
     email = dh.get_email_by_token(token)
     if email == None:
         return jsonify({'message': 'Missing email for token'}), 401
-    
+
     user = dh.get_user_by_email(email)
     if (user != None):
         return jsonify({'message': 'User data has been found', 'data': user}), 200
@@ -179,10 +179,10 @@ def get_user_data_by_email(email):
         return jsonify({'message': 'Missing inputs'}), 400
     elif not(emailValid(email)):
         return jsonify({'message': 'Incorrect email'}), 400
-    
+
     if(request.method != 'GET'):
         return jsonify({'message': 'Method not allowed'}), 405
-    
+
     signed_in = dh.check_signedin(token)
     if signed_in == False:
         return jsonify({'message': 'Not logged in'}), 401
@@ -209,8 +209,8 @@ def post_mesage():
         return jsonify({'message': 'Missing inputs'}), 401
     elif dh.get_user_by_email(data['email']) == None:
         return jsonify({'message': 'User does not exist'}), 404
-    
-    if(request.method != 'GET'):
+
+    if(request.method != 'POST'):
         return jsonify({'message': 'Method not allowed'}), 405
 
     sender = dh.get_email_by_token(token)
@@ -219,20 +219,20 @@ def post_mesage():
         return jsonify({'message': 'Message has been posted'}), 201
     except:
         return jsonify({'message': 'Message has not been posted'}), 500
-    
+
 @app.route('/get_user_messages_by_token', methods=['GET'])
 def get_user_messages_by_token():
     token = request.headers.get('Authorization')
     if token is None:
         return jsonify({'message': 'Missing token'}), 401
-    
+
     if(request.method != 'GET'):
         return jsonify({'message': 'Method not allowed'}), 405
-    
+
     email = dh.get_email_by_token(token)
     if (email is None or not emailValid(email)):
         return jsonify({'message': 'Incorrect email'}), 401
-    
+
     try:
         messages = dh.get_messages(email)
         return jsonify({'message': 'Messages has been collected', 'data': messages}), 200
@@ -244,14 +244,14 @@ def get_user_messages_by_email(email):
     token = request.headers.get('Authorization')
     if token is None:
         return jsonify({'message': 'Missing token'}), 401
-    
+
     if(request.method != 'GET'):
         return jsonify({'message': 'Method not allowed'}), 405
-    
+
     signed_in = dh.check_signedin(token)
     if signed_in == False:
         return jsonify({'message': 'Not logged in'}), 401
-    
+
     if dh.get_user_by_email(email) is None:
         return jsonify({'message': 'User not found'}), 404
 
@@ -280,10 +280,10 @@ def change_password():
         return jsonify({'message': 'No inputs'}), 400
     elif auth is None:
         return jsonify({'message': 'Not logged in'}), 401
-    
+
     if(request.method != 'PUT'):
         return jsonify({'message': 'Method not allowed'}), 405
-    
+
     email = dh.get_email_by_token(auth)
 
     if email is None:
@@ -294,13 +294,13 @@ def change_password():
         return jsonify({'message': 'Password too short'}), 400
     elif not dh.check_password(email, data['oldpassword']):
         return jsonify({'message': 'Wrong password'}), 401
-    
+
     try:
         dh.change_password(email, data['newpassword'])
         return jsonify({'message': 'Password changed'}), 200
     except:
         return jsonify({'message': 'Something went wrong'}), 500
-    
+
 if __name__ == '__main__':
     dh.init_db()
     app.debug = True

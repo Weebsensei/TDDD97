@@ -60,7 +60,7 @@ function httpRequest(method, url, data, success, failure){
         if (xml.readyState === 4){
             let response = JSON.parse(xml.responseText);
             if (xml.status === 200 || xml.status === 201){
-                success(response.data);           
+                success(response.data);
             } else {
                 failure(xml.status, response.message);
             }
@@ -111,7 +111,7 @@ function loginValidate(email, password) {
     let object = {'email': email,
                  'password': password};
 
-    httpRequest('POST', '/sign_in', object, 
+    httpRequest('POST', '/sign_in', object,
         function(data){
             let token = data;
             sessionStorage.setItem("token", token);
@@ -142,7 +142,7 @@ function passwdValidation(passwd, repasswd, error) {
     document.getElementById(error).innerHTML = "";
     return true;
 }
-    
+
 function signup(form) {
     let email = form.email.value;
     let passwd = form.passwd.value;
@@ -181,7 +181,7 @@ function signup(form) {
 }
 
 function showTab(tabName){
- 
+
     let contens = document.querySelectorAll(".tab-content");
     contens.forEach(content => content.style.display = "none");
 
@@ -225,7 +225,7 @@ function changePassword(form) {
             }
         );
     }
-} 
+}
 
 function signOut() {
     token = getToken();
@@ -264,7 +264,7 @@ function messagePost(form) {
         'email': form.toEmail.value,
         'message': form.postTextarea.value
     }
-    httpRequest('POST', '/post_message', dataObject, 
+    httpRequest('POST', '/post_message', dataObject,
         function(){
             document.getElementById("postForm").reset();
         },
@@ -291,7 +291,7 @@ function browseMessagePost(form) {
         'email': form.browsetoEmail.value,
         'message': form.browsepostTextarea.value
     }
-    httpRequest('POST', '/post_message', dataObject, 
+    httpRequest('POST', '/post_message', dataObject,
         function(){
             document.getElementById("browsePostForm").reset();
         },
@@ -317,7 +317,9 @@ function loadMessages() {
         function(data) {
             let messages = "";
             for (let i = data.length-1; 0 <= i; i--) {
-                messages += `<dt>${data[i][1]}</dt><dd draggable="true" ondragstart="dragstartHandler(event)">${data[i][0]}</dd>`;
+                messages +=
+                `<dt draggable="true" ondragstart="dragstartHandler(event)">${data[i][1]}</dt>
+                 <dd draggable="true" ondragstart="dragstartHandler(event)">${data[i][0]}</dd>`;
             }
             document.getElementById("messages").innerHTML = messages;
         },
@@ -341,7 +343,9 @@ function loadBrowseMessages() {
             function(data) {
                 let messages = "";
                 for (let i = data.length-1; 0 <= i; i--) {
-                    messages += `<dt>${data[i][1]}</dt><dd draggable="true" ondragstart="dragstartHandler(event)">${data[i][0]}</dd>`;
+                    messages +=
+                    `<dt draggable="true" ondragstart="dragstartHandler(event)">${data[i][1]}</dt>
+                     <dd draggable="true" ondragstart="dragstartHandler(event)">${data[i][0]}</dd>`;
                 }
                 document.getElementById("browse_messages").innerHTML = messages;
                 document.getElementById("browseWallErrorMessage").innerHTML = "";
