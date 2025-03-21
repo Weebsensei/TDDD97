@@ -27,6 +27,11 @@ body {
     text-align: center;
 }
 
+/* Need because firefox looks bad otherwise */
+.element label {
+    font-size: 11px;
+}
+
 #twidder {
     float: left;
     width: 340px;
