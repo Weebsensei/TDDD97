@@ -5,12 +5,13 @@ let connection = {
 
 function wsConnect(){
     let token = sessionStorage.getItem("token");
-    let url = `ws://${window.location.host}/connect?token=${token}`
-    if (connection.active == null) {
+    if (token == null) {
         return;
     }
+    let url = `ws://${window.location.host}/connect?token=${token}`
 
     connection.ws = new WebSocket(url);
+    console.log(connection.ws)
 
     connection.ws.onopen = function() {
         console.log("Connected");
@@ -39,10 +40,10 @@ function wsConnect(){
             sessionStorage.clear();
             connection.active = false;
             connection.ws = null;
+            console.log("Disconnected");
             displayView();
             break;
           default:
-            console.log(response.action);
             console.log("Unexpected message");
             break;
         }
@@ -50,6 +51,7 @@ function wsConnect(){
 }
 
 window.onload = function(){
+    wsConnect();
     displayView();
 };
 
@@ -271,6 +273,7 @@ function messagePost(form) {
     httpRequest('POST', '/post_message', dataObject,
         function(){
             document.getElementById("postForm").reset();
+            document.getElementById('PostErrorMessage').innerHTML = ``;
         },
         function(status){
             if(status == 400) {

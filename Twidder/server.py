@@ -15,33 +15,26 @@ active_sockets = dict()
 @sock.route("/connect")
 def connect(ws):
     token = request.args.get('token')
+    print(ws.__dict__)
     email = dh.get_email_by_token(token)
     if email == None:
         ws.close()
         return
 
     active_sockets[email] = {
-        'ws': ws,
-        'token': token
+        'ws': ws
     }
 
-    try:
-        while True:
-            message = ws.receive()
-            if message is None:
-                break
-            try:
-                data = json.loads(message)
-            except json.JSONDecodeError:
-                print("Received invalid JSON")
-                continue
-    except:
-        print("Connect error")
-    finally:
-        conn = active_sockets.get(email)
-        if conn is not None and conn.get('token') == token:
-            conn['ws'].close()
-            active_sockets.pop(email, None)
+    while True:
+        message = ws.receive()
+        # console.log(ws)
+        if message is None:
+            break
+        try:
+            data = json.loads(message)
+        except json.JSONDecodeError:
+            print("Received invalid JSON")
+            continue
 
 def emailValid(email):
     if email is None:
@@ -207,8 +200,10 @@ def post_mesage():
         return jsonify({'message': 'Missing token'}), 401
     elif not dh.get_email_by_token(token):
         return jsonify({'message': 'no matching email to token'}), 400
-    elif not (isinstance(data['email'], str) and isinstance(data['message'], str)):
-        return jsonify({'message': 'Missing inputs'}), 401
+    elif not (isinstance(data['email'], str) or isinstance(data['message'], str)):
+        return jsonify({'message': 'Missing inputs'}), 400
+    elif (data['message'] == ""):
+        return jsonify({'message': 'Missing message'}), 400
     elif dh.get_user_by_email(data['email']) == None:
         return jsonify({'message': 'User does not exist'}), 404
 
