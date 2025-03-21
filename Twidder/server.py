@@ -19,6 +19,7 @@ def connect(ws):
     if email == None:
         ws.close()
         return
+
     active_sockets[email] = {
         'ws': ws,
         'token': token
@@ -151,6 +152,7 @@ def sign_out():
         except:
             pass
         active_sockets.pop(dh.get_email_by_token(token), None)
+
     return jsonify({'message': 'Successfully signed out'}), 200
 
 @app.route('/get_user_data_by_token', methods=['GET'])
@@ -293,7 +295,7 @@ def change_password():
     elif not isinstance(data['newpassword'], str) or len(data['newpassword']) < 6:
         return jsonify({'message': 'Password too short'}), 400
     elif not dh.check_password(email, data['oldpassword']):
-        return jsonify({'message': 'Wrong password'}), 401
+        return jsonify({'message': 'Wrong password'}), 400
 
     try:
         dh.change_password(email, data['newpassword'])

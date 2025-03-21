@@ -6,11 +6,12 @@ let connection = {
 function wsConnect(){
     let token = sessionStorage.getItem("token");
     let url = `ws://${window.location.host}/connect?token=${token}`
-    if (connection.active == null){
+    if (connection.active == null) {
         return;
     }
 
     connection.ws = new WebSocket(url);
+
     connection.ws.onopen = function() {
         console.log("Connected");
         connection.active = true;
@@ -39,7 +40,9 @@ function wsConnect(){
             connection.active = false;
             connection.ws = null;
             displayView();
+            break;
           default:
+            console.log(response.action);
             console.log("Unexpected message");
             break;
         }
@@ -210,6 +213,7 @@ function changePassword(form) {
         httpRequest('PUT', '/change_password', dataObject,
             function(){
                 form.reset();
+                document.getElementById('PassErrorMessage').innerHTML = `Password changed successfully!`;
             },
             function(status){
                 if(status == 400) {
